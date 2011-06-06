@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/" lang="en">
+        <file alias="project_schema">project/project.xsd</file>
+    </qresource>
+</RCC>

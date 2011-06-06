@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <comment>**********************************************************************
+ **
+ ** Copyright © 2011, Jason Gedge &lt;gedge -at- ualberta -dot- ca&gt;
+ **
+ ** This file is part of StereoReconstruction.
+ **
+ ** StereoReconstruction is free software: you can redistribute it and/or
+ ** modify it under the terms of the GNU General Public License as published
+ ** by the Free Software Foundation, either version 3 of the License, or
+ ** (at your option) any later version.
+ **
+ ** StereoReconstruction is distributed in the hope that it will be
+ ** useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ ** of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ ** GNU General Public License for more details.
+ **
+ ** You should have received a copy of the GNU General Public License along
+ ** with StereoReconstruction. If not, see &lt;http:www.gnu.org/licenses/&gt;.
+ **
+ **********************************************************************</comment>
+ <class>ProgressDialog</class>
+ <widget class="QDialog" name="ProgressDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>350</width>
+    <height>106</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Progress</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QProgressBar" name="progressBar"/>
+   </item>
+   <item>
+    <widget class="QLabel" name="progressLabel">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

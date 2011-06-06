@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <comment>**********************************************************************
+ **
+ ** Copyright © 2011, Jason Gedge &lt;gedge -at- ualberta -dot- ca&gt;
+ **
+ ** This file is part of StereoReconstruction.
+ **
+ ** StereoReconstruction is free software: you can redistribute it and/or
+ ** modify it under the terms of the GNU General Public License as published
+ ** by the Free Software Foundation, either version 3 of the License, or
+ ** (at your option) any later version.
+ **
+ ** StereoReconstruction is distributed in the hope that it will be
+ ** useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ ** of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ ** GNU General Public License for more details.
+ **
+ ** You should have received a copy of the GNU General Public License along
+ ** with StereoReconstruction. If not, see &lt;http:www.gnu.org/licenses/&gt;.
+ **
+ **********************************************************************</comment>
+ <class>BrowseForFileLineEdit</class>
+ <widget class="QWidget" name="BrowseForFileLineEdit">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>329</width>
+    <height>34</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QLineEdit" name="lineEdit"/>
+   </item>
+   <item>
+    <widget class="QPushButton" name="browseButton">
+     <property name="text">
+      <string>Browse...</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

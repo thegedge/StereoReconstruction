@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <comment>**********************************************************************
+ **
+ ** Copyright © 2011, Jason Gedge &lt;gedge -at- ualberta -dot- ca&gt;
+ **
+ ** This file is part of StereoReconstruction.
+ **
+ ** StereoReconstruction is free software: you can redistribute it and/or
+ ** modify it under the terms of the GNU General Public License as published
+ ** by the Free Software Foundation, either version 3 of the License, or
+ ** (at your option) any later version.
+ **
+ ** StereoReconstruction is distributed in the hope that it will be
+ ** useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ ** of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ ** GNU General Public License for more details.
+ **
+ ** You should have received a copy of the GNU General Public License along
+ ** with StereoReconstruction. If not, see &lt;http:www.gnu.org/licenses/&gt;.
+ **
+ **********************************************************************</comment>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="documentMode">
+   <bool>true</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <widget class="QScrollArea" name="stereoScrollArea">
+    <property name="widgetResizable">
+     <bool>true</bool>
+    </property>
+    <widget class="QWidget" name="scrollAreaWidgetContents">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>798</width>
+       <height>555</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="StereoWidget" name="stereoWidget" native="true"/>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="SceneViewer" name="sceneViewer"/>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen_Recent">
+     <property name="title">
+      <string>Open Recent</string>
+     </property>
+     <addaction name="separator"/>
+     <addaction name="actionClear_Recent_Files"/>
+    </widget>
+    <addaction name="actionNew"/>
+    <addaction name="actionOpen"/>
+    <addaction name="menuOpen_Recent"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionConvert_RAW_images"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_PLY_File"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuCapture">
+    <property name="title">
+     <string>Capture</string>
+    </property>
+    <addaction name="actionCapture_Images"/>
+    <addaction name="actionCapture_Images_Bumblebee"/>
+    <addaction name="actionSave_Captured_Images"/>
+    <addaction name="separator"/>
+    <addaction name="actionCapture_Calibration_Images"/>
+    <addaction name="actionCapture_Multi_Exposure_Images"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionView_Nothing"/>
+    <addaction name="actionView_Camera_Layout"/>
+    <addaction name="actionView_Images"/>
+    <addaction name="actionView_Points"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowHide_Project_Explorer"/>
+    <addaction name="actionShowHide_Inspector"/>
+    <addaction name="actionShowHide_Task_List"/>
+   </widget>
+   <widget class="QMenu" name="menuStereo">
+    <property name="title">
+     <string>Stereo</string>
+    </property>
+    <addaction name="actionRun_PMVS"/>
+    <addaction name="actionDump_Projection_Data_For_PMVS"/>
+    <addaction name="separator"/>
+    <addaction name="actionFind_Features"/>
+    <addaction name="actionFind_Feature_Correspondences"/>
+    <addaction name="actionCalibrate_Cameras"/>
+    <addaction name="separator"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuHDR">
+    <property name="title">
+     <string>HDR</string>
+    </property>
+    <addaction name="actionCreate_HDR_Image"/>
+   </widget>
+   <widget class="QMenu" name="menuProject">
+    <property name="title">
+     <string>Project</string>
+    </property>
+    <addaction name="actionNew_Camera"/>
+    <addaction name="actionRemove_Camera"/>
+    <addaction name="separator"/>
+    <addaction name="actionNew_Image_Set"/>
+    <addaction name="actionNew_Image_Set_From_Directory"/>
+    <addaction name="actionRemove_Image_Set"/>
+    <addaction name="separator"/>
+    <addaction name="actionNew_Image"/>
+    <addaction name="actionRemove_Image"/>
+   </widget>
+   <widget class="QMenu" name="menuAbout">
+    <property name="title">
+     <string>About</string>
+    </property>
+    <addaction name="actionAbout_StereoReconstruction"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuProject"/>
+   <addaction name="menuCapture"/>
+   <addaction name="menuStereo"/>
+   <addaction name="menuHDR"/>
+   <addaction name="menuAbout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionCapture_Images">
+   <property name="text">
+    <string>Capture Images</string>
+   </property>
+  </action>
+  <action name="actionView_PLY_File">
+   <property name="text">
+    <string>View PLY File...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionSave_Captured_Images">
+   <property name="text">
+    <string>Save Captured Images...</string>
+   </property>
+  </action>
+  <action name="actionCapture_Calibration_Images">
+   <property name="text">
+    <string>Capture Calibration Images...</string>
+   </property>
+   <property name="toolTip">
+    <string>Capture Calibration Images</string>
+   </property>
+  </action>
+  <action name="actionView_Images">
+   <property name="text">
+    <string>View Images</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionView_Points">
+   <property name="text">
+    <string>View Points</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionShowHide_Project_Explorer">
+   <property name="text">
+    <string>Show Project Explorer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionView_Camera_Layout">
+   <property name="text">
+    <string>View Camera Layout</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionRun_PMVS">
+   <property name="text">
+    <string>Run PMVS...</string>
+   </property>
+   <property name="toolTip">
+    <string>Run PMVS</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionShowHide_Inspector">
+   <property name="text">
+    <string>Show Inspector</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionView_Nothing">
+   <property name="text">
+    <string>View Nothing</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="actionCreate_HDR_Image">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Create HDR Image...</string>
+   </property>
+  </action>
+  <action name="actionCapture_Multi_Exposure_Images">
+   <property name="text">
+    <string>Capture Multi-Exposure Images...</string>
+   </property>
+  </action>
+  <action name="actionCalibrate_Cameras">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Calibrate Cameras...</string>
+   </property>
+  </action>
+  <action name="actionConvert_RAW_images">
+   <property name="text">
+    <string>Convert RAW images...</string>
+   </property>
+  </action>
+  <action name="actionCapture_Images_Bumblebee">
+   <property name="text">
+    <string>Capture Images (BumbleBee)</string>
+   </property>
+  </action>
+  <action name="actionFind_Features">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Find Features...</string>
+   </property>
+  </action>
+  <action name="actionFind_Feature_Correspondences">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Find Feature Correspondences</string>
+   </property>
+  </action>
+  <action name="actionDump_Projection_Data_For_PMVS">
+   <property name="text">
+    <string>Dump Projection Data For PMVS...</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionClear_Recent_Files">
+   <property name="text">
+    <string>Clear Recent Files</string>
+   </property>
+   <property name="toolTip">
+    <string>Clear Recent Files</string>
+   </property>
+  </action>
+  <action name="actionNew_Camera">
+   <property name="text">
+    <string>New Camera</string>
+   </property>
+  </action>
+  <action name="actionRemove_Camera">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Remove Camera</string>
+   </property>
+  </action>
+  <action name="actionNew_Image_Set">
+   <property name="text">
+    <string>New Image Set</string>
+   </property>
+  </action>
+  <action name="actionRemove_Image_Set">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Remove Image Set</string>
+   </property>
+  </action>
+  <action name="actionShowHide_Task_List">
+   <property name="text">
+    <string>Show Task List</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+T</string>
+   </property>
+  </action>
+  <action name="actionNew_Image">
+   <property name="text">
+    <string>New Image...</string>
+   </property>
+  </action>
+  <action name="actionRemove_Image">
+   <property name="text">
+    <string>Remove Image</string>
+   </property>
+  </action>
+  <action name="actionNew_Image_Set_From_Directory">
+   <property name="text">
+    <string>New Image Set From Directory...</string>
+   </property>
+  </action>
+  <action name="actionAbout_StereoReconstruction">
+   <property name="text">
+    <string>About StereoReconstruction...</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>StereoWidget</class>
+   <extends>QWidget</extends>
+   <header>gui/widgets/stereowidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>SceneViewer</class>
+   <extends>QWidget</extends>
+   <header>gui/scene/sceneviewer.hpp</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>actionClear_Recent_Files</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clearRecentFiles()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>menuProject</sender>
+   <signal>aboutToShow()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>prepareProjectMenu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>125</x>
+     <y>101</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>clearRecentFiles()</slot>
+  <slot>prepareProjectMenu()</slot>
+ </slots>
+</ui>

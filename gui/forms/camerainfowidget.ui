@@ -1,0 +1,1028 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <comment>**********************************************************************
+ **
+ ** Copyright © 2011, Jason Gedge &lt;gedge -at- ualberta -dot- ca&gt;
+ **
+ ** This file is part of StereoReconstruction.
+ **
+ ** StereoReconstruction is free software: you can redistribute it and/or
+ ** modify it under the terms of the GNU General Public License as published
+ ** by the Free Software Foundation, either version 3 of the License, or
+ ** (at your option) any later version.
+ **
+ ** StereoReconstruction is distributed in the hope that it will be
+ ** useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ ** of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ ** GNU General Public License for more details.
+ **
+ ** You should have received a copy of the GNU General Public License along
+ ** with StereoReconstruction. If not, see &lt;http:www.gnu.org/licenses/&gt;.
+ **
+ **********************************************************************</comment>
+ <class>CameraInfoWidget</class>
+ <widget class="QWidget" name="CameraInfoWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>355</width>
+    <height>509</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QLineEdit { border: 1px solid palette(mid); }</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>5</number>
+   </property>
+   <item>
+    <widget class="QToolBox" name="toolBox">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="basicInfoPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>355</width>
+        <height>368</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Basic Info</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>10</y>
+         <width>320</width>
+         <height>74</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="basicInfoLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::ExpandingFieldsGrow</enum>
+        </property>
+        <property name="formAlignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="margin">
+         <number>10</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="cameraIDLabel">
+          <property name="text">
+           <string>Camera ID:</string>
+          </property>
+          <property name="buddy">
+           <cstring>cameraIDLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="cameraNameLabel">
+          <property name="text">
+           <string>Camera Name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>cameraNameLineEdit</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="cameraNameLineEdit"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="cameraIDLineEdit">
+          <property name="styleSheet">
+           <string notr="true">QLineEdit {
+	background: transparent;
+	border: none;
+}</string>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="intrinsicParamsPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>355</width>
+        <height>368</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Intrinsic Parameters</string>
+      </attribute>
+      <widget class="QWidget" name="formLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>30</y>
+         <width>310</width>
+         <height>185</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="radialDistortionLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::ExpandingFieldsGrow</enum>
+        </property>
+        <property name="formAlignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLabel" name="k1Label">
+          <property name="text">
+           <string>K1 =</string>
+          </property>
+          <property name="buddy">
+           <cstring>k1</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="k1"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="k2Label">
+          <property name="text">
+           <string>K2 =</string>
+          </property>
+          <property name="buddy">
+           <cstring>k2</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="k2"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="k3Label">
+          <property name="text">
+           <string>K3 =</string>
+          </property>
+          <property name="buddy">
+           <cstring>k3</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="k3"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="p1Label">
+          <property name="text">
+           <string>P1 =</string>
+          </property>
+          <property name="buddy">
+           <cstring>p1</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="p1"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="p2Label">
+          <property name="text">
+           <string>P2 =</string>
+          </property>
+          <property name="buddy">
+           <cstring>p2</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="p2"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="gridLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>240</y>
+         <width>310</width>
+         <height>106</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="intrinsicParamsLayout">
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="intrinsic11"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLineEdit" name="intrinsic21"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLineEdit" name="intrinsic31"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="intrinsic12"/>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="intrinsic13"/>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="intrinsic22"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLineEdit" name="intrinsic23"/>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="intrinsic32"/>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLineEdit" name="intrinsic33"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QLabel" name="radialDistortionLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>0</y>
+         <width>117</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Radial Distortion:</string>
+       </property>
+       <property name="buddy">
+        <cstring>k1</cstring>
+       </property>
+      </widget>
+      <widget class="QLabel" name="intrinsicParamsLabel">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>220</y>
+         <width>106</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Intrinsic Matrix:</string>
+       </property>
+       <property name="buddy">
+        <cstring>intrinsic11</cstring>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="extrinsicParamsPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>355</width>
+        <height>368</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Extrinsic Parameters</string>
+      </attribute>
+      <widget class="QWidget" name="gridLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>40</y>
+         <width>300</width>
+         <height>106</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="rotationMatrixLayout">
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLineEdit" name="r11">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="r12">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLineEdit" name="r13">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="r21">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLineEdit" name="r31">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="r22">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="r32">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="r23">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLineEdit" name="r33">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="gridLayoutWidget_3">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>190</y>
+         <width>300</width>
+         <height>106</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="copLayout">
+        <property name="leftMargin">
+         <number>20</number>
+        </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
+        <property name="rightMargin">
+         <number>10</number>
+        </property>
+        <property name="bottomMargin">
+         <number>10</number>
+        </property>
+        <item row="0" column="0">
+         <widget class="QLineEdit" name="copX">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLineEdit" name="copY">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLineEdit" name="copZ">
+          <property name="maxLength">
+           <number>100</number>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QLabel" name="rotationMatrixLabel">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>10</y>
+         <width>221</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Rotation Matrix:</string>
+       </property>
+       <property name="buddy">
+        <cstring>r11</cstring>
+       </property>
+      </widget>
+      <widget class="QLabel" name="copLabel">
+       <property name="geometry">
+        <rect>
+         <x>30</x>
+         <y>160</y>
+         <width>221</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Center of Projection:</string>
+       </property>
+       <property name="buddy">
+        <cstring>copX</cstring>
+       </property>
+      </widget>
+     </widget>
+     <widget class="RadiometricCalibrationWidget" name="radiometricCalibrationPage">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>355</width>
+        <height>368</height>
+       </rect>
+      </property>
+      <attribute name="label">
+       <string>Radiometric Calibration</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>RadiometricCalibrationWidget</class>
+   <extends>QWidget</extends>
+   <header>gui/widgets/radiometriccalibrationwidget.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>cameraIDLineEdit</tabstop>
+  <tabstop>cameraNameLineEdit</tabstop>
+  <tabstop>k1</tabstop>
+  <tabstop>k2</tabstop>
+  <tabstop>k3</tabstop>
+  <tabstop>p1</tabstop>
+  <tabstop>p2</tabstop>
+  <tabstop>intrinsic11</tabstop>
+  <tabstop>intrinsic12</tabstop>
+  <tabstop>intrinsic13</tabstop>
+  <tabstop>intrinsic21</tabstop>
+  <tabstop>intrinsic22</tabstop>
+  <tabstop>intrinsic23</tabstop>
+  <tabstop>intrinsic31</tabstop>
+  <tabstop>intrinsic32</tabstop>
+  <tabstop>intrinsic33</tabstop>
+  <tabstop>r11</tabstop>
+  <tabstop>r12</tabstop>
+  <tabstop>r13</tabstop>
+  <tabstop>r21</tabstop>
+  <tabstop>r22</tabstop>
+  <tabstop>r23</tabstop>
+  <tabstop>r31</tabstop>
+  <tabstop>r32</tabstop>
+  <tabstop>r33</tabstop>
+  <tabstop>copX</tabstop>
+  <tabstop>copY</tabstop>
+  <tabstop>copZ</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>k1</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>k1</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>k2</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>138</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>k3</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>p1</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>p2</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>80</x>
+     <y>228</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic11</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>319</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic12</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>319</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic13</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>319</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic21</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic22</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic23</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic31</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>40</x>
+     <y>381</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic32</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>137</x>
+     <y>381</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>intrinsic33</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>381</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r11</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r12</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r13</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>153</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r21</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r22</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r23</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>184</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r31</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r32</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>143</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>r33</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>237</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>copX</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>303</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>copY</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>334</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>copZ</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>50</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cameraNameLineEdit</sender>
+   <signal>editingFinished()</signal>
+   <receiver>CameraInfoWidget</receiver>
+   <slot>updateCamera()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>230</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>177</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>updateCamera()</slot>
+ </slots>
+</ui>

@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--===================================================================
+ ==
+ == Copyright © 2011, Jason Gedge [gedge -at- ualberta -dot- ca]
+ ==
+ == This file is part of StereoReconstruction.
+ ==
+ == StereoReconstruction is free software: you can redistribute it and/or
+ == modify it under the terms of the GNU General Public License as published
+ == by the Free Software Foundation, either version 3 of the License, or
+ == (at your option) any later version.
+ ==
+ == StereoReconstruction is distributed in the hope that it will be
+ == useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ == of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ == GNU General Public License for more details.
+ ==
+ == You should have received a copy of the GNU General Public License along
+ == with StereoReconstruction. If not, see [http:www.gnu.org/licenses/].
+ ==
+ ===================================================================-->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <!--============================================================-->
+
+	<xsd:annotation>
+		<xsd:documentation xml:lang="en">
+			Project file schema
+		</xsd:documentation>
+	</xsd:annotation>
+
+  <!--============================================================-->
+
+	<xsd:element name="project">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="cameras" type="Cameras" minOccurs="0" maxOccurs="1"/>
+				<xsd:element name="imageSets" type="ImageSets" minOccurs="0" maxOccurs="1"/>
+				<xsd:element name="featureSets" type="FeatureSets" minOccurs="0" maxOccurs="1"/>
+				<xsd:element name="correspondenceSets" type="CorrespondenceSets" minOccurs="0" maxOccurs="1"/>
+			</xsd:sequence>
+		</xsd:complexType>
+
+		<!--============================================================-->
+
+		<xsd:key name="cameraID">
+			<xsd:selector xpath="cameras/camera"/>
+			<xsd:field xpath="@id"/>
+		</xsd:key>
+
+		<xsd:key name="imageSetID">
+			<xsd:selector xpath="imageSets/imageSet"/>
+			<xsd:field xpath="@id"/>
+		</xsd:key>
+
+		<!--============================================================-->
+
+		<xsd:keyref name="imageToCameraRef" refer="cameraID">
+			<xsd:selector xpath="imageSet/image"/>
+			<xsd:field xpath="@for"/>
+		</xsd:keyref>
+
+		<xsd:keyref name="featureSetToImageSetRef" refer="imageSetID">
+			<xsd:selector xpath="featureSets/featureSet"/>
+			<xsd:field xpath="@imageSet"/>
+		</xsd:keyref>
+
+		<xsd:keyref name="featureSetToCameraRef" refer="cameraID">
+			<xsd:selector xpath="featureSets/featureSet"/>
+			<xsd:field xpath="@camera"/>
+		</xsd:keyref>
+
+		<xsd:keyref name="correspondenceToImageSet1Ref" refer="imageSetID">
+			<xsd:selector xpath="correspondenceSets/correspondenceSet"/>
+			<xsd:field xpath="@imageSet1"/>
+		</xsd:keyref>
+
+		<xsd:keyref name="correspondenceToImageSet2Ref" refer="imageSetID">
+			<xsd:selector xpath="correspondenceSets/correspondenceSet"/>
+			<xsd:field xpath="imageSet2"/>
+		</xsd:keyref>
+
+		<xsd:keyref name="correspondenceToCamera1Ref" refer="cameraID">
+			<xsd:selector xpath="correspondenceSets/correspondenceSet"/>
+			<xsd:field xpath="@camera1"/>
+		</xsd:keyref>
+
+		<xsd:keyref name="correspondenceToCamera2Ref" refer="cameraID">
+			<xsd:selector xpath="correspondenceSets/correspondenceSet"/>
+			<xsd:field xpath="@camera1"/>
+		</xsd:keyref>
+	</xsd:element>
+
+  <!--============================================================-->
+
+	<xsd:complexType name="Cameras">
+		<xsd:sequence>
+			<xsd:element name="camera" type="Camera" maxOccurs="unbounded"/>
+		</xsd:sequence>
+
+		<!-- Number of cameras (optional) -->
+		<xsd:attribute name="num" type="xsd:positiveInteger"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="Camera">
+		<xsd:sequence>
+			<xsd:element name="projectionMatrix" minOccurs="0">
+				<xsd:complexType>
+					<xsd:attribute name="m11" type="xsd:double" use="required"/>
+					<xsd:attribute name="m12" type="xsd:double" use="required"/>
+					<xsd:attribute name="m13" type="xsd:double" use="required"/>
+					<xsd:attribute name="m14" type="xsd:double" use="required"/>
+					<xsd:attribute name="m21" type="xsd:double" use="required"/>
+					<xsd:attribute name="m22" type="xsd:double" use="required"/>
+					<xsd:attribute name="m23" type="xsd:double" use="required"/>
+					<xsd:attribute name="m24" type="xsd:double" use="required"/>
+					<xsd:attribute name="m31" type="xsd:double" use="required"/>
+					<xsd:attribute name="m32" type="xsd:double" use="required"/>
+					<xsd:attribute name="m33" type="xsd:double" use="required"/>
+					<xsd:attribute name="m34" type="xsd:double" use="required"/>
+				</xsd:complexType>
+			</xsd:element>
+
+			<xsd:element name="lensDistortion" minOccurs="0">
+				<xsd:complexType>
+					<xsd:attribute name="k1" type="xsd:double" default="0"/>
+					<xsd:attribute name="k2" type="xsd:double" default="0"/>
+					<xsd:attribute name="k3" type="xsd:double" default="0"/>
+					<xsd:attribute name="p1" type="xsd:double" default="0"/>
+					<xsd:attribute name="p2" type="xsd:double" default="0"/>
+				</xsd:complexType>
+			</xsd:element>
+
+			<!-- Optional parameters for a refractive interface, which is assumed to be planar -->
+			<xsd:element name="refractiveInterface" minOccurs="0">
+				<xsd:complexType>
+					<!--
+					   - 2D-coordinate of pixel such that the direction of a ray casted through
+					   - that pixel is the same as the normal of the refractive interface
+					   -->
+					<xsd:attribute name="px" type="xsd:double" use="required" />
+					<xsd:attribute name="py" type="xsd:double" use="required" />
+
+					<!-- Distance to the interface, along the direction of the interface's normal -->
+					<xsd:attribute name="dist" type="xsd:double" use="required" />
+
+					<!--
+					   - Ratio of the refractive index in front of interface to the
+					   - refractive index of the medium on the same side as the camera
+					   -->
+					<xsd:attribute name="refractiveRatio" type="xsd:double" use="required" />
+				</xsd:complexType>
+			</xsd:element>
+
+			<xsd:element name="response" type="ResponseCurve" minOccurs="0" maxOccurs="3"/>
+		</xsd:sequence>
+
+		<!-- Unique id for the camera -->
+		<xsd:attribute name="id" type="xsd:string" use="required"/>
+
+		<!-- Descriptive name for the camera (optional) -->
+		<xsd:attribute name="name" type="xsd:string"/>
+	</xsd:complexType>
+
+  <!--============================================================-->
+
+	<xsd:complexType name="ImageSets">
+		<xsd:sequence>
+			<xsd:element name="imageSet" type="ImageSet" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+
+		<!-- Number of image sets (optional) -->
+		<xsd:attribute name="num" type="xsd:nonNegativeInteger"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="ImageSet">
+		<xsd:sequence>
+			<xsd:element name="image" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<!-- Path to the image, relative to the root path of the set -->
+					<xsd:attribute name="file" type="xsd:string" use="required"/>
+
+					<!-- References a camera ID from the <cameras> element -->
+					<xsd:attribute name="for" type="xsd:string"/>
+
+					<!-- Exposure time of the image (in ms) -->
+					<xsd:attribute name="exposure" type="xsd:double" use="optional"/>
+
+					<!-- Path to a mask for the image, relative to the root path of the set (optional) -->
+					<xsd:attribute name="mask" type="xsd:string" use="optional"/>
+
+					<!-- Whether or not this is the default image for this camera -->
+					<xsd:attribute name="default" use="optional">
+						<xsd:simpleType>
+							<xsd:restriction base="xsd:string">
+								<xsd:enumeration value="yes"/>
+							</xsd:restriction>
+						</xsd:simpleType>
+					</xsd:attribute>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+
+		<!-- Unique id for the image set -->
+		<xsd:attribute name="id" type="xsd:string" use="required"/>
+
+		<!-- Descriptive name for the set -->
+		<xsd:attribute name="name" type="xsd:string" default="&lt;unnamed&gt;"/>
+
+		<!-- Root path of the set, default assumed to be same directory as XML file -->
+		<xsd:attribute name="root" type="xsd:string" default=""/>
+	</xsd:complexType>
+
+  <!--============================================================-->
+
+	<xsd:complexType name="ResponseCurve">
+		<xsd:sequence>
+			<xsd:element name="value" minOccurs="256" maxOccurs="unbounded" type="xsd:double"/>
+		</xsd:sequence>
+
+		<xsd:attribute name="channel" use="required">
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:string">
+					<xsd:enumeration value="red"/>
+					<xsd:enumeration value="green"/>
+					<xsd:enumeration value="blue"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+
+  <!--============================================================-->
+
+	<xsd:complexType name="FeatureSets">
+		<xsd:sequence>
+			<xsd:element name="featureSet" type="FeatureSet" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+
+		<!-- Number of feature sets (optional) -->
+		<xsd:attribute name="num" type="xsd:positiveInteger"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="FeatureSet">
+		<xsd:sequence>
+			<xsd:element name="feature" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:any minOccurs="0" maxOccurs="unbounded"/>
+					</xsd:sequence>
+
+					<!-- The type of feature (e.g., surf, checkerboard) -->
+					<xsd:attribute name="type" type="xsd:string" use="required"/>
+
+					<!-- The x coordinate of the feature -->
+					<xsd:attribute name="x" type="xsd:double" use="required"/>
+
+					<!-- The y coordinate of the feature -->
+					<xsd:attribute name="y" type="xsd:double" use="required"/>
+
+					<!-- An index for the feature, used for establishing -->
+					<!-- correspondence. This value should be unique within -->
+					<!-- each FeatureSet element. -->
+					<xsd:attribute name="index" type="xsd:nonNegativeInteger" use="required"/>
+
+					<!-- Anything else specific to the feature -->
+					<!-- NOTE: Currently not working with Qt's validator -->
+					<!-- <xsd:anyAttribute/> -->
+
+					<!-- Checkerboard feature attributes -->
+					<xsd:attribute name="cindex" type="xsd:integer" use="optional"/>
+					<xsd:attribute name="imageSet" type="xsd:string" use="optional"/>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+
+		<!-- References a camera ID from the <cameras> element -->
+		<xsd:attribute name="imageSet" type="xsd:string" use="required"/>
+
+		<!-- Exposure time of the image (in ms) -->
+		<xsd:attribute name="camera" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+  <!--============================================================-->
+
+	<xsd:complexType name="CorrespondenceSets">
+		<xsd:sequence>
+			<xsd:element name="correspondenceSet" type="CorrespondenceSet" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+
+		<!-- Number of feature sets (optional) -->
+		<xsd:attribute name="num" type="xsd:positiveInteger"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="CorrespondenceSet">
+		<xsd:sequence>
+			<xsd:element name="correspondence" minOccurs="0" maxOccurs="unbounded">
+				<xsd:complexType>
+					<xsd:attribute name="index1" type="xsd:nonNegativeInteger" use="required" />
+					<xsd:attribute name="index2" type="xsd:nonNegativeInteger" use="required" />
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:sequence>
+
+		<!-- Used to establish a reference to the appropriate images -->
+		<xsd:attribute name="imageSet1" type="xsd:string" use="required" />
+		<xsd:attribute name="imageSet2" type="xsd:string" use="required" />
+		<xsd:attribute name="camera1" type="xsd:string" use="required" />
+		<xsd:attribute name="camera2" type="xsd:string" use="required" />
+	</xsd:complexType>
+
+  <!--============================================================-->
+
+</xsd:schema>
