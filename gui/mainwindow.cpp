@@ -1243,7 +1243,7 @@ void MainWindow::on_actionNew_Camera_triggered() {
 		                      tr("Camera Exists"),
 		                      tr("A camera already exists with identitifer `%1`").arg(id));
 	} else {
-		CameraPtr cam(new Camera(id));
+		CameraPtr cam = std::make_shared<Camera>(id, id);
 		project->addCamera(cam);
 		projectExplorer->setProject(project); // TODO use signals/slots
 		projectExplorer->editCamera(cam);
@@ -1291,7 +1291,7 @@ void MainWindow::on_actionNew_Image_Set_triggered() {
 		                      tr("Image Set Exists"),
 		                      tr("An image set already exists with identitifer `%1`").arg(id));
 	} else {
-		ImageSetPtr imageSet(new ImageSet(id));
+		ImageSetPtr imageSet = std::make_shared<ImageSet>(id, id);
 		project->addImageSet(imageSet);
 		projectExplorer->setProject(project); // TODO use signals/slots
 		projectExplorer->editImageSet(imageSet);
@@ -1300,20 +1300,64 @@ void MainWindow::on_actionNew_Image_Set_triggered() {
 
 //---------------------------------------------------------------------
 
-void MainWindow::on_actionNew_Image_Set_From_Directory_triggered() {
+void MainWindow::on_actionNew_Image_Set_From_Files_triggered() {
+	//
+	QStringList imageFilter;
+	foreach(QByteArray format, QImageReader::supportedImageFormats())
+		imageFilter << format;
+
 	//
 	QString initialDir =
 			userSettings.contains("InitialNewImageSetFromDirectoryDir")
 			? userSettings.value("InitialNewImageSetFromDirectoryDir").toString()
 			: QDir::homePath();
 
-	QString path = QFileDialog::getExistingDirectory(this,
-	                                                 tr("New Image Set"),
-	                                                 initialDir);
+	QStringList images = QFileDialog::getOpenFileNames(this,
+	                                                   tr("New Image Set"),
+	                                                   initialDir,
+	                                                   tr("Images (*.%1)").arg(imageFilter.join(" *.")));
 
-	if(!path.isNull()) {
-		userSettings.setValue("InitialNewImageSetFromDirectoryDir", path);
+	if(!images.isEmpty()) {
+		QDir path(images.front());
+		path.cdUp();
 
+		userSettings.setValue("InitialNewImageSetFromDirectoryDir", path.path());
+
+		// Find an id that doesn't exist
+		QString base = path.dirName();
+		QString id = base;
+		int index = 1;
+		while(project->imageSet(id)) {
+			id = base + QString::number(index);
+			++index;
+		}
+
+		// Try to relate cameras to images. We use a simple check where, if
+		// an image's path contains a camera's name/id, that camera is
+		// associated to the camera
+		ImageSetPtr imageSet = std::make_shared<ImageSet>(id, id);
+		imageSet->setRoot(path.absolutePath());
+
+		foreach(QString imagePath, images) {
+			CameraPtr imageCam;
+			foreach(CameraPtr cam, project->cameras()) {
+				if(imagePath.contains(cam->name(), Qt::CaseInsensitive)) {
+					imageCam = cam;
+					break;
+				} else if(imagePath.contains(cam->id(), Qt::CaseInsensitive)) {
+					imageCam = cam;
+					break;
+				}
+			}
+
+			ProjectImagePtr image = std::make_shared<ProjectImage>(imagePath);
+			imageSet->addImageForCamera(imageCam, image);
+		}
+
+		//
+		project->addImageSet(imageSet);
+		projectExplorer->setProject(project); // TODO use signals/slots
+		projectExplorer->editImageSet(imageSet);
 	}
 }
 
@@ -1344,8 +1388,14 @@ void MainWindow::on_actionNew_Image_triggered() {
 			? userSettings.value("InitialNewImageDir").toString()
 			: QDir::homePath();
 
-	QString filter = tr("Images (*.bmp *.jpg *.jpeg *.pgm *.png *.ppm)");
+	//
+	QStringList imageFilter;
+	foreach(QByteArray format, QImageReader::supportedImageFormats())
+		imageFilter << format;
 
+	QString filter = tr("Images (*.%1)").arg(imageFilter.join(" *."));
+
+	//
 	QString path = QFileDialog::getOpenFileName(this,
 	                                            tr("New Image"),
 	                                            initialDir,
@@ -1354,7 +1404,7 @@ void MainWindow::on_actionNew_Image_triggered() {
 	if(!path.isNull()) {
 		userSettings.setValue("InitialNewImageDir", path);
 
-		ProjectImagePtr image(new ProjectImage(path));
+		ProjectImagePtr image = std::make_shared<ProjectImage>(path);
 		imageSet->addImageForCamera(project->cameras().begin().value(), image);
 		projectExplorer->setProject(project); // TODO use signals/slots
 	}

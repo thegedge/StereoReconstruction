@@ -43,7 +43,7 @@ FORWARD_DECLARE(ProjectImage);
 //! A set of images
 class ImageSet : public std::enable_shared_from_this<ImageSet> {
 public:
-	ImageSet(QString id);
+	ImageSet(QString id, QString name = QString());
 
 public:
 	QString id() const { return id_; }
@@ -52,6 +52,7 @@ public:
 	void setName(QString name) { name_ = name; }
 
 	QDir root() const { return root_; }
+	void setRoot(QString path) { root_.setPath(path); }
 
 	const std::vector<ProjectImagePtr> & images() const { return images_; }
 

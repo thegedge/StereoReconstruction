@@ -53,7 +53,7 @@ typedef std::vector<Response> Responses;
 //! Camera used in the project
 class Camera {
 public:
-	Camera(QString id);
+	Camera(QString id, QString name = QString());
 
 public:
 	QString id() const { return id_; }

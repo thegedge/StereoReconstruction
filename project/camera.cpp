@@ -177,9 +177,9 @@ void orthonormalize(Matrix3d &mat) {
 
 //---------------------------------------------------------------------
 
-Camera::Camera(QString id)
+Camera::Camera(QString id, QString name)
 	: id_(id)
-    , name_("<no name>")
+    , name_(name.isNull() ? "<no name>" : name)
     , P_(ProjMat::Zero())
 	, t_(Vector3d::Zero())
 	, C_(Vector3d::Zero())

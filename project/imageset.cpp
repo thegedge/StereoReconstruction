@@ -25,9 +25,9 @@
 
 //---------------------------------------------------------------------
 
-ImageSet::ImageSet(QString id)
+ImageSet::ImageSet(QString id, QString name)
     : id_(id)
-    , name_("<no name>")
+    , name_(name.isNull() ? "<no name>" : name)
 { }
 
 //---------------------------------------------------------------------
@@ -62,7 +62,7 @@ void ImageSet::addImageForCamera(CameraPtr cam, ProjectImagePtr image) {
 		image->setImageSet(shared_from_this());
 		images_.push_back(image);
 
-		if(!defaults_.contains(cam))
+		if(cam && !defaults_.contains(cam))
 			defaults_[cam] = image;
 	}
 }

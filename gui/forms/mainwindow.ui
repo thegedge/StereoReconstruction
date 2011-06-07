@@ -148,7 +148,7 @@
     <addaction name="actionRemove_Camera"/>
     <addaction name="separator"/>
     <addaction name="actionNew_Image_Set"/>
-    <addaction name="actionNew_Image_Set_From_Directory"/>
+    <addaction name="actionNew_Image_Set_From_Files"/>
     <addaction name="actionRemove_Image_Set"/>
     <addaction name="separator"/>
     <addaction name="actionNew_Image"/>
@@ -404,9 +404,12 @@
     <string>Remove Image</string>
    </property>
   </action>
-  <action name="actionNew_Image_Set_From_Directory">
+  <action name="actionNew_Image_Set_From_Files">
    <property name="text">
-    <string>New Image Set From Directory...</string>
+    <string>New Image Set From Files...</string>
+   </property>
+   <property name="toolTip">
+    <string>New Image Set From Files</string>
    </property>
   </action>
   <action name="actionAbout_StereoReconstruction">

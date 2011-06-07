@@ -114,7 +114,7 @@ private slots:
 	void on_actionNew_Camera_triggered();
 	void on_actionRemove_Camera_triggered();
 	void on_actionNew_Image_Set_triggered();
-	void on_actionNew_Image_Set_From_Directory_triggered();
+	void on_actionNew_Image_Set_From_Files_triggered();
 	void on_actionRemove_Image_Set_triggered();
 	void on_actionNew_Image_triggered();
 	void on_actionRemove_Image_triggered();
