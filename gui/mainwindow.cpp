@@ -172,6 +172,7 @@ MainWindow::MainWindow(QWidget *parent)
 	inspectorDock->hide();
 
 	inspector = new QStackedWidget(inspectorDock);
+	inspector->addWidget(new QWidget(this));
 	inspector->addWidget(cameraInfoWidget);
 	inspector->addWidget(imageSetTable);
 	inspectorDock->setWidget(inspector);
@@ -243,10 +244,10 @@ MainWindow::MainWindow(QWidget *parent)
 	//
 	// Set up initial window state
 	//
-	ui->actionView_Nothing->trigger();
 	restoreGeometry(userSettings.value("mainWindowGeometry").toByteArray());
 	restoreState(userSettings.value("mainWindowState").toByteArray());
 	updateRecentFiles();
+	ui->actionView_Nothing->trigger();
 	ui->actionNew->trigger();
 }
 
@@ -280,20 +281,19 @@ void crossProduct(const float *p1, const float *p2, const float *p3, float *n) {
 }
 
 //---------------------------------------------------------------------
-// TODO factor loading coad out of here and into the more appropriate
-//      location: pointsviewscene.*
+// TODO factor code out of here and into its own class for loading and
+//      saving PLY files (additional code in stereo/multiviewstereo.cpp)
+//
 void MainWindow::on_actionView_PLY_File_triggered() {
-	QString initialDir =
-			userSettings.contains("InitialPLYDir")
-			? userSettings.value("InitialPLYDir").toString()
-			: QDir::homePath();
+	QString initialDir = userSettings.contains("InitialPLYDir")
+	                     ? userSettings.value("InitialPLYDir").toString()
+	                     : QDir::homePath();
 
 	// TODO sheets would be nice for Mac users :)
-	QString fname = QFileDialog::getOpenFileName(
-			this,
-			tr("Open File"),
-			initialDir,
-			"PLY Files (*.ply)");
+	QString fname = QFileDialog::getOpenFileName(this,
+	                                             tr("Open File"),
+	                                             initialDir,
+	                                             "PLY Files (*.ply)");
 
 	if(!fname.isNull()) {
 		QFile file(fname);
@@ -752,6 +752,8 @@ void MainWindow::on_actionView_Nothing_triggered() {
 	ui->stackedWidget->setCurrentWidget(ui->stereoScrollArea);
 }
 
+//---------------------------------------------------------------------
+
 void MainWindow::on_actionView_Camera_Layout_triggered() {
 	ui->actionView_Nothing->setEnabled(true);
 	ui->actionView_Camera_Layout->setEnabled(false);
@@ -763,6 +765,8 @@ void MainWindow::on_actionView_Camera_Layout_triggered() {
 		ui->sceneViewer->setScene(sceneCameraLayout);
 }
 
+//---------------------------------------------------------------------
+
 void MainWindow::on_actionView_Images_triggered() {
 	ui->actionView_Nothing->setEnabled(true);
 	ui->actionView_Camera_Layout->setEnabled(true);
@@ -773,6 +777,8 @@ void MainWindow::on_actionView_Images_triggered() {
 	if(ui->sceneViewer->isValid())
 		ui->sceneViewer->setScene(sceneImages);
 }
+
+//---------------------------------------------------------------------
 
 void MainWindow::on_actionView_Points_triggered() {
 	ui->actionView_Nothing->setEnabled(true);
@@ -800,6 +806,8 @@ void MainWindow::on_actionShowHide_Project_Explorer_triggered(bool vis) {
 		ui->actionShowHide_Project_Explorer->setText(tr("Show Project Explorer"));
 }
 
+//---------------------------------------------------------------------
+
 void MainWindow::on_actionShowHide_Inspector_triggered(bool vis) {
 	if(sender() == ui->actionShowHide_Inspector) {
 		vis = !inspectorDock->isVisible();
@@ -812,6 +820,8 @@ void MainWindow::on_actionShowHide_Inspector_triggered(bool vis) {
 	else
 		ui->actionShowHide_Inspector->setText(tr("Show Inspector"));
 }
+
+//---------------------------------------------------------------------
 
 void MainWindow::on_actionShowHide_Task_List_triggered(bool vis) {
 	if(sender() == ui->actionShowHide_Task_List) {
@@ -839,7 +849,6 @@ void MainWindow::setProject(QString fname) {
 		// Set camera locations
 		QList<CameraPtr> cams = project->cameras().values();
 		sceneCameraLayout->setCameras(std::vector<CameraPtr>(cams.begin(), cams.end()));
-		//ui->actionView_Camera_Layout->trigger();
 
 		//
 		ui->actionFind_Features->setEnabled(true);
@@ -944,12 +953,16 @@ void MainWindow::saveProjectToFile(QString path) const {
 	}
 }
 
+//---------------------------------------------------------------------
+
 void MainWindow::on_actionSave_triggered() {
 	if(windowFilePath().isNull())
 		ui->actionSave_As->trigger();
 	else
 		saveProjectToFile(windowFilePath());
 }
+
+//---------------------------------------------------------------------
 
 void MainWindow::on_actionSave_As_triggered() {
 	QString filePath = QFileDialog::getSaveFileName(this,
@@ -976,6 +989,8 @@ void MainWindow::cameraSelected(int, CameraPtr cam) {
 		inspector->setCurrentWidget(cameraInfoWidget);
 	}
 }
+
+//---------------------------------------------------------------------
 
 void MainWindow::imageSetSelected(int, ImageSetPtr imageSet) {
 	sceneCameraLayout->setSelectedCamera(CameraPtr());

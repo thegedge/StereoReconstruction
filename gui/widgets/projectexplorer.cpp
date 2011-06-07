@@ -152,6 +152,7 @@ void ProjectExplorer::editCamera(CameraPtr cam) {
 	for(int index = 0; index < camerasItem->childCount(); ++index) {
 		QTreeWidgetItem *item = camerasItem->child(index);
 		if(item->data(0, Qt::UserRole).toString() == cam->id()) {
+			item->setSelected(true);
 			ui->treeWidget->editItem(item);
 			break;
 		}
@@ -162,6 +163,7 @@ void ProjectExplorer::editImageSet(ImageSetPtr imageSet) {
 	for(int index = 0; index < imageSetsItem->childCount(); ++index) {
 		QTreeWidgetItem *item = imageSetsItem->child(index);
 		if(item->data(0, Qt::UserRole).toString() == imageSet->id()) {
+			item->setSelected(true);
 			ui->treeWidget->editItem(item);
 			break;
 		}

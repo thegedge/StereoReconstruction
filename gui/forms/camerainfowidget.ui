@@ -51,86 +51,22 @@
    </property>
    <item>
     <widget class="QToolBox" name="toolBox">
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="basicInfoPage">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>355</width>
-        <height>368</height>
-       </rect>
-      </property>
-      <attribute name="label">
-       <string>Basic Info</string>
-      </attribute>
-      <widget class="QWidget" name="formLayoutWidget">
-       <property name="geometry">
-        <rect>
-         <x>20</x>
-         <y>10</y>
-         <width>320</width>
-         <height>74</height>
-        </rect>
-       </property>
-       <layout class="QFormLayout" name="basicInfoLayout">
-        <property name="fieldGrowthPolicy">
-         <enum>QFormLayout::ExpandingFieldsGrow</enum>
-        </property>
-        <property name="formAlignment">
-         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-        </property>
-        <property name="margin">
-         <number>10</number>
-        </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="cameraIDLabel">
-          <property name="text">
-           <string>Camera ID:</string>
-          </property>
-          <property name="buddy">
-           <cstring>cameraIDLineEdit</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="cameraNameLabel">
-          <property name="text">
-           <string>Camera Name:</string>
-          </property>
-          <property name="buddy">
-           <cstring>cameraNameLineEdit</cstring>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="cameraNameLineEdit"/>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="cameraIDLineEdit">
-          <property name="styleSheet">
-           <string notr="true">QLineEdit {
-	background: transparent;
-	border: none;
-}</string>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
      <widget class="QWidget" name="intrinsicParamsPage">
       <property name="geometry">
        <rect>
         <x>0</x>
         <y>0</y>
         <width>355</width>
-        <height>368</height>
+        <height>402</height>
        </rect>
       </property>
       <attribute name="label">
@@ -291,12 +227,6 @@
          <height>16</height>
         </rect>
        </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
        <property name="text">
         <string>Radial Distortion:</string>
        </property>
@@ -312,12 +242,6 @@
          <width>106</width>
          <height>16</height>
         </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
        </property>
        <property name="text">
         <string>Intrinsic Matrix:</string>
@@ -480,12 +404,6 @@
          <height>16</height>
         </rect>
        </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
        <property name="text">
         <string>Rotation Matrix:</string>
        </property>
@@ -501,12 +419,6 @@
          <width>221</width>
          <height>16</height>
         </rect>
-       </property>
-       <property name="font">
-        <font>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
        </property>
        <property name="text">
         <string>Center of Projection:</string>
@@ -542,8 +454,6 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>cameraIDLineEdit</tabstop>
-  <tabstop>cameraNameLineEdit</tabstop>
   <tabstop>k1</tabstop>
   <tabstop>k2</tabstop>
   <tabstop>k3</tabstop>
@@ -1002,22 +912,6 @@
     <hint type="destinationlabel">
      <x>20</x>
      <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cameraNameLineEdit</sender>
-   <signal>editingFinished()</signal>
-   <receiver>CameraInfoWidget</receiver>
-   <slot>updateCamera()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>230</x>
-     <y>93</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>177</x>
-     <y>254</y>
     </hint>
    </hints>
   </connection>

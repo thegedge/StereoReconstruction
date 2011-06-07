@@ -44,11 +44,7 @@ CameraInfoWidget::CameraInfoWidget(QWidget *parent)
     ui->setupUi(this);
 	ui->toolBox->setCurrentIndex(0);
 
-	QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, ui->basicInfoPage);
-	layout->addWidget(ui->basicInfoLayout->parentWidget());
-	layout->addStretch();
-
-	layout = new QBoxLayout(QBoxLayout::TopToBottom, ui->intrinsicParamsPage);
+	QBoxLayout *layout = new QBoxLayout(QBoxLayout::TopToBottom, ui->intrinsicParamsPage);
 	layout->addWidget(ui->radialDistortionLabel);
 	layout->addWidget(ui->radialDistortionLayout->parentWidget());
 	layout->addWidget(ui->intrinsicParamsLabel);
@@ -76,9 +72,6 @@ void CameraInfoWidget::setProject(ProjectPtr project) {
 void CameraInfoWidget::setCamera(int index, CameraPtr camera) {
 	currentCamera = camera;
 	if(camera) {
-		ui->cameraIDLineEdit->setText(camera->id());
-		ui->cameraNameLineEdit->setText(camera->name());
-
 		ui->k1->setText(QString::number(camera->lensDistortion()[0], 'f'));
 		ui->k2->setText(QString::number(camera->lensDistortion()[1], 'f'));
 		ui->p1->setText(QString::number(camera->lensDistortion()[2], 'f'));
@@ -128,8 +121,6 @@ void CameraInfoWidget::changeEvent(QEvent *e) {
 //---------------------------------------------------------------------
 
 void CameraInfoWidget::updateCamera() {
-	currentCamera->setName(ui->cameraNameLineEdit->text());
-
 	LensDistortions current = currentCamera->lensDistortion();
 	current[0] = toDouble(ui->k1->text(), current[0]);
 	current[1] = toDouble(ui->k2->text(), current[1]);
