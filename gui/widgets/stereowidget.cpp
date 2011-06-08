@@ -24,6 +24,16 @@
 //    factor out the epipolar line computation to a file of its own (and
 //    be sure to use this in stereo classes too)
 //
+//  - Get away from the two-view style interface and have a multi-view
+//    approach. Perhaps tabs or just a horizontal display mode.
+//
+//  - Extract refractive calibration to somewhere else (CameraInfoWidget?)
+//
+//  - More interaction with MultiViewStereo. Allow selection of cameras,
+//    easier tuning of parameters, complete set of tunable parameters,
+//    and the ability to selectively view depth hypotheses from various
+//    stages of the algorithm (e.g., before and after cross-checking)
+//
 #include "stereowidget.hpp"
 #include "ui_stereowidget.h"
 
