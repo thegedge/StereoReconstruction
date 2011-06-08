@@ -40,6 +40,9 @@
    <bool>true</bool>
   </property>
   <widget class="QStackedWidget" name="stackedWidget">
+   <property name="currentIndex">
+    <number>2</number>
+   </property>
    <widget class="QScrollArea" name="stereoScrollArea">
     <property name="widgetResizable">
      <bool>true</bool>
@@ -49,8 +52,8 @@
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>798</width>
-       <height>555</height>
+       <width>98</width>
+       <height>28</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -63,7 +66,9 @@
      </layout>
     </widget>
    </widget>
-   <widget class="SceneViewer" name="sceneViewer"/>
+   <widget class="CameraLayoutScene" name="cameraLayoutScene"/>
+   <widget class="PointsViewScene" name="pointsViewScene"/>
+   <widget class="CapturedImagesScene" name="capturedImagesScene"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -427,9 +432,22 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>SceneViewer</class>
+   <class>CameraLayoutScene</class>
    <extends>QWidget</extends>
-   <header>gui/scene/sceneviewer.hpp</header>
+   <header>gui/scene/cameralayoutscene.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PointsViewScene</class>
+   <extends>QWidget</extends>
+   <header>gui/scene/pointsviewscene.hpp</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CapturedImagesScene</class>
+   <extends>QWidget</extends>
+   <header>gui/scene/capturedimagesscene.hpp</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

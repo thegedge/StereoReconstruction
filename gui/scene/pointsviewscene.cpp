@@ -19,30 +19,28 @@
 //
 //---------------------------------------------------------------------
 #include "pointsviewscene.hpp"
+#include "shaders.hpp"
 
 #define _USE_MATH_DEFINES
 
 #include <algorithm>
 #include <limits>
-#include <math.h>
+#include <cmath>
 
-#include <QDebug>
-#include <QGLWidget>
+#include <QMouseEvent>
 
 //---------------------------------------------------------------------
-
+namespace {
 #ifndef M_PI
-#   define M_PI      3.14159265358979323846
+	const double M_PI = 3.14159265358979323846;
 #endif
-
 #ifndef M_PI_2
-#   define M_PI_2    1.57079632679489661923
+	const double M_PI_2 = 1.57079632679489661923;
 #endif
-
 #ifndef M_1_PI
-#   define M_1_PI    0.31830988618379067154
+	const double M_1_PI = 0.31830988618379067154;
 #endif
-
+}
 //---------------------------------------------------------------------
 
 PointsViewScene::PointsViewScene()
@@ -54,8 +52,11 @@ PointsViewScene::PointsViewScene()
 	, rotx(0.3), roty(M_PI), rotz(M_PI)
 	, lastx(0), lasty(0)
 	, width(1), height(1)
-	, animated(false)
-{ }
+{
+	animationTimer.setInterval(1000 / 30);
+	animationTimer.setSingleShot(false);
+	connect(&animationTimer, SIGNAL(timeout()), SLOT(updateGL()));
+}
 
 //---------------------------------------------------------------------
 
@@ -77,7 +78,32 @@ PointsViewScene::~PointsViewScene() {
 
 //---------------------------------------------------------------------
 
-void PointsViewScene::initialize() {
+void PointsViewScene::initializeGL() {
+#ifdef PLATFORM_WIN
+	if(glewInit() != GLEW_OK)
+		qDebug() << "Uh oh!";
+#endif
+	//
+	// Enable/disable various OpenGL stuff
+	//
+	glClearColor(1, 1, 1, 1);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LINE_STIPPLE);
+	glEnable(GL_POINT_SPRITE);
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glEnable(GL_COLOR_MATERIAL);
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_NORMALIZE);
+	glDisable(GL_DITHER);
+
+#ifndef PLATFORM_WIN
+	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
+#endif
+	glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glDepthFunc(GL_LEQUAL);
+
 #ifdef USE_SPLATS
 	//
 	// Create FBO and textures
@@ -117,18 +143,7 @@ void PointsViewScene::initialize() {
 
 //---------------------------------------------------------------------
 
-void PointsViewScene::onShow() {
-	//glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-}
-
-void PointsViewScene::onHide() {
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-}
-
-//---------------------------------------------------------------------
-
-void PointsViewScene::onResize(int w, int h) {
+void PointsViewScene::resizeGL(int w, int h) {
 	GLdouble ratio = static_cast<GLdouble>(w) / h;
 
 	//
@@ -219,7 +234,7 @@ void PointsViewScene::drawBounds() {
 
 //---------------------------------------------------------------------
 
-void PointsViewScene::onPaint(QGLWidget *) {
+void PointsViewScene::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if(verticies.size() > 0) {
 		//
@@ -235,7 +250,7 @@ void PointsViewScene::onPaint(QGLWidget *) {
 		glLoadIdentity();
 		gluLookAt(0.0, 0.0, zoom, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-		if(animated)
+		if(animationTimer.isActive())
 			roty += 0.01;
 
 		glRotated(180*rotx*M_1_PI, 1.0, 0.0, 0.0);
@@ -325,20 +340,23 @@ void PointsViewScene::onPaint(QGLWidget *) {
 
 //---------------------------------------------------------------------
 
-bool PointsViewScene::onMousePress(QMouseEvent *evt) {
-	if(evt->modifiers().testFlag(Qt::ControlModifier))
-		animated = !animated;
+void PointsViewScene::mousePressEvent(QMouseEvent *evt) {
+	if(evt->modifiers().testFlag(Qt::ControlModifier)) {
+		if(animationTimer.isActive())
+			animationTimer.stop();
+		else
+			animationTimer.start();
+	}
 
 	lastx = evt->x();
 	lasty = evt->y();
-	return false;
 }
 
 //---------------------------------------------------------------------
 
-bool PointsViewScene::onMouseMove(QMouseEvent *evt) {
+void PointsViewScene::mouseMoveEvent(QMouseEvent *evt) {
 	if(evt->buttons() == Qt::NoButton)
-		return false;
+		return;
 
 	int deltax = evt->x() - lastx;
 	int deltay = evt->y() - lasty;
@@ -361,12 +379,12 @@ bool PointsViewScene::onMouseMove(QMouseEvent *evt) {
 
 	lastx = evt->x();
 	lasty = evt->y();
-	return true;
+	updateGL();
 }
 
 //---------------------------------------------------------------------
 
-bool PointsViewScene::onMouseWheel(QWheelEvent *evt) {
+void PointsViewScene::wheelEvent(QWheelEvent *evt) {
 	if(evt->modifiers().testFlag(Qt::ControlModifier)) {
 		point_size += evt->delta() / 600.0;
 
@@ -384,7 +402,8 @@ bool PointsViewScene::onMouseWheel(QWheelEvent *evt) {
 		if(zoom < 0.1)     zoom = 0.1;
 		else if(zoom > 50) zoom = 50;
 	}
-	return true;
+
+	updateGL();
 }
 
 //---------------------------------------------------------------------
@@ -460,6 +479,9 @@ void PointsViewScene::setPoints(std::vector<GLfloat> &verticies, std::vector<GLu
 	//
 	this->verticies.swap(verticies);
 	this->indicies.swap(indicies);
+
+	//
+	updateGL();
 }
 
 //---------------------------------------------------------------------

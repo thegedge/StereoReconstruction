@@ -21,15 +21,11 @@
 #ifndef POINTSVIEWSCENE_H
 #define POINTSVIEWSCENE_H
 
-#include "sceneviewer.hpp"
-
-//
-//
-//
-class QGLWidget;
+#include <QGLWidget>
+#include <QTimer>
 
 //! A scene for viewing a set of points.
-class PointsViewScene : public Scene {
+class PointsViewScene : public QGLWidget {
 public:
     PointsViewScene();
 	~PointsViewScene();
@@ -39,26 +35,21 @@ public:
 	void setPoints(std::vector<GLfloat> &verticies, std::vector<GLuint> &indicies);
 
 public:
-	//
-	// Scene implementation / overrides
-	//
-	bool isAnimated() const { return animated; }
+	void initializeGL();
+	void paintGL();
+	void resizeGL(int w, int h);
 
-	void initialize();
-	void onPaint(QGLWidget *parent);
-	void onResize(int w, int h);
-	void onShow();
-	void onHide();
-
-	bool onMousePress(QMouseEvent *evt);
-	bool onMouseMove(QMouseEvent *evt);
-	bool onMouseWheel(QWheelEvent *evt);
+	void mousePressEvent(QMouseEvent *evt);
+	void mouseMoveEvent(QMouseEvent *evt);
+	void wheelEvent(QWheelEvent *evt);
 
 private:
 	void drawBounds();
 
 private:
 	static const int NUM_PASSES = 3;
+
+	QTimer animationTimer;
 
 	std::vector<GLfloat> verticies; // interleaved (position, normal, color) values
 	std::vector<GLuint> indicies; // (v1, v2, v3) tri indicies
@@ -76,8 +67,6 @@ private:
 	double rotx, roty, rotz; // rotations for viewing models
 	double lastx, lasty;     // mouse movement
 	int width, height;
-
-	bool animated;
 };
 
 #endif // POINTSVIEWSCENE_H

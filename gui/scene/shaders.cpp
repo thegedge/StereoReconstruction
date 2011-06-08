@@ -18,15 +18,13 @@
 // with StereoReconstruction. If not, see <http:www.gnu.org/licenses/>.
 //
 //---------------------------------------------------------------------
-#include "sceneviewer.hpp"
-
-#include <QDebug>
+#include <gl.h>
 #include <fstream>
+#include <QDebug>
 
 //---------------------------------------------------------------------
 
-GLuint Scene::loadShader(GLenum type, const char *file) {
-#ifndef PLATFORM_WIN
+GLuint loadShader(GLenum type, const char *file) {
 	std::ifstream fin(file);
 
 	GLint numBytes = 0;
@@ -58,21 +56,16 @@ GLuint Scene::loadShader(GLenum type, const char *file) {
 	delete [] fileData;
 
 	return shader;
-#else
-	return 0;
-#endif
 }
 
 //---------------------------------------------------------------------
 
-void Scene::loadProgram(
-		const char *vsFile,
-		const char *fsFile,
-		GLuint &vs,
-		GLuint &fs,
-		GLuint &program)
+void loadProgram(const char *vsFile,
+                 const char *fsFile,
+                 GLuint &vs,
+                 GLuint &fs,
+                 GLuint &program)
 {
-#ifndef PLATFORM_WIN
 	vs = loadShader(GL_VERTEX_SHADER, vsFile);
 	fs = loadShader(GL_FRAGMENT_SHADER, fsFile);
 
@@ -80,7 +73,6 @@ void Scene::loadProgram(
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
 	glLinkProgram(program);
-#endif
 }
 
 //---------------------------------------------------------------------

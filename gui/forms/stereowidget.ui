@@ -859,6 +859,22 @@ Check the image sets to use for calibration and feature visualization.</string>
     </widget>
    </item>
   </layout>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom Out</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>leftViewCombo</tabstop>
@@ -921,42 +937,10 @@ Check the image sets to use for calibration and feature visualization.</string>
    </hints>
   </connection>
   <connection>
-   <sender>toolZoomIn</sender>
-   <signal>clicked()</signal>
-   <receiver>StereoWidget</receiver>
-   <slot>zoomIn()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>795</x>
-     <y>327</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>724</x>
-     <y>303</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>toolZoomOut</sender>
-   <signal>clicked()</signal>
-   <receiver>StereoWidget</receiver>
-   <slot>zoomOut()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>816</x>
-     <y>361</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>652</x>
-     <y>303</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>minDepthSpinner</sender>
    <signal>valueChanged(double)</signal>
    <receiver>StereoWidget</receiver>
-   <slot>updateView(double)</slot>
+   <slot>updateView()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>207</x>
@@ -972,7 +956,7 @@ Check the image sets to use for calibration and feature visualization.</string>
    <sender>maxDepthSpinner</sender>
    <signal>valueChanged(double)</signal>
    <receiver>StereoWidget</receiver>
-   <slot>updateView(double)</slot>
+   <slot>updateView()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>253</x>
@@ -988,7 +972,7 @@ Check the image sets to use for calibration and feature visualization.</string>
    <sender>numDepthLevelsSpinner</sender>
    <signal>valueChanged(int)</signal>
    <receiver>StereoWidget</receiver>
-   <slot>updateView(int)</slot>
+   <slot>updateView()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>231</x>
@@ -1005,7 +989,6 @@ Check the image sets to use for calibration and feature visualization.</string>
   <slot>cameraChanged(int)</slot>
   <slot>zoomIn()</slot>
   <slot>zoomOut()</slot>
-  <slot>updateView(double)</slot>
-  <slot>updateView(int)</slot>
+  <slot>updateView()</slot>
  </slots>
 </ui>

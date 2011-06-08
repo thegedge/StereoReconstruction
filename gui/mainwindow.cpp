@@ -97,9 +97,6 @@ MainWindow::MainWindow(QWidget *parent)
 	, userSettings(QSettings::UserScope, "Jason Gedge", "StereoReconstruction")
 	, trayIcon(nullptr)
     , recentFiles(userSettings.value("recentFileList").toStringList())
-	, sceneImages(new CapturedImagesScene)
-	, scenePoints(new PointsViewScene)
-	, sceneCameraLayout(new CameraLayoutScene)
 {
     ui->setupUi(this);
 
@@ -474,8 +471,7 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 			//
 			//
 			ui->actionView_Points->trigger();
-			scenePoints->setPoints(verticies, indicies);
-			ui->sceneViewer->updateGL();
+			ui->pointsViewScene->setPoints(verticies, indicies);
 		} else {
 			QMessageBox::warning(
 					this,
@@ -491,8 +487,7 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 void MainWindow::captureImages_Finished() {
 	ui->statusBar->showMessage(tr("Images captured! (count = %1)").arg(ciThread.images().size()), 2000);
 	ui->actionView_Images->trigger();
-	if(ui->sceneViewer->isValid())
-		sceneImages->setImages(ciThread.images());
+	ui->capturedImagesScene->setImages(ciThread.images());
 }
 
 //---------------------------------------------------------------------
@@ -521,7 +516,7 @@ void MainWindow::captureCalibrationImages_Finished() {
 	} else {
 		ui->statusBar->showMessage("Images captured!", 1000);
 		ui->actionView_Images->trigger();
-		sceneImages->setImages(ciThread.images());
+		ui->capturedImagesScene->setImages(ciThread.images());
 	}
 }
 
@@ -759,10 +754,7 @@ void MainWindow::on_actionView_Camera_Layout_triggered() {
 	ui->actionView_Camera_Layout->setEnabled(false);
 	ui->actionView_Images->setEnabled(true);
 	ui->actionView_Points->setEnabled(true);
-
-	ui->stackedWidget->setCurrentWidget(ui->sceneViewer);
-	if(ui->sceneViewer->isValid())
-		ui->sceneViewer->setScene(sceneCameraLayout);
+	ui->stackedWidget->setCurrentWidget(ui->cameraLayoutScene);
 }
 
 //---------------------------------------------------------------------
@@ -772,10 +764,7 @@ void MainWindow::on_actionView_Images_triggered() {
 	ui->actionView_Camera_Layout->setEnabled(true);
 	ui->actionView_Images->setEnabled(false);
 	ui->actionView_Points->setEnabled(true);
-
-	ui->stackedWidget->setCurrentWidget(ui->sceneViewer);
-	if(ui->sceneViewer->isValid())
-		ui->sceneViewer->setScene(sceneImages);
+	ui->stackedWidget->setCurrentWidget(ui->capturedImagesScene);
 }
 
 //---------------------------------------------------------------------
@@ -785,10 +774,7 @@ void MainWindow::on_actionView_Points_triggered() {
 	ui->actionView_Camera_Layout->setEnabled(true);
 	ui->actionView_Images->setEnabled(true);
 	ui->actionView_Points->setEnabled(false);
-
-	ui->stackedWidget->setCurrentWidget(ui->sceneViewer);
-	if(ui->sceneViewer->isValid())
-		ui->sceneViewer->setScene(scenePoints);
+	ui->stackedWidget->setCurrentWidget(ui->pointsViewScene);
 }
 
 //---------------------------------------------------------------------
@@ -797,7 +783,6 @@ void MainWindow::on_actionShowHide_Project_Explorer_triggered(bool vis) {
 	if(sender() == ui->actionShowHide_Project_Explorer) {
 		vis = !projectExplorerDock->isVisible();
 		projectExplorerDock->setVisible(vis);
-		ui->sceneViewer->updateGL();
 	}
 
 	if(vis)
@@ -812,7 +797,6 @@ void MainWindow::on_actionShowHide_Inspector_triggered(bool vis) {
 	if(sender() == ui->actionShowHide_Inspector) {
 		vis = !inspectorDock->isVisible();
 		inspectorDock->setVisible(vis);
-		ui->sceneViewer->updateGL();
 	}
 
 	if(vis)
@@ -827,7 +811,6 @@ void MainWindow::on_actionShowHide_Task_List_triggered(bool vis) {
 	if(sender() == ui->actionShowHide_Task_List) {
 		vis = !taskListDock->isVisible();
 		taskListDock->setVisible(vis);
-		ui->sceneViewer->updateGL();
 	}
 
 	if(vis)
@@ -847,7 +830,7 @@ void MainWindow::setProject(QString fname) {
 			ui->actionShowHide_Project_Explorer->trigger();
 
 		// Set camera locations
-		sceneCameraLayout->setProject(project);
+		ui->cameraLayoutScene->setProject(project);
 
 		//
 		ui->actionFind_Features->setEnabled(true);
@@ -980,9 +963,7 @@ void MainWindow::on_actionSave_As_triggered() {
 //---------------------------------------------------------------------
 
 void MainWindow::cameraSelected(CameraPtr cam) {
-	sceneCameraLayout->setSelectedCamera(cam);
-	ui->sceneViewer->updateGL();
-
+	ui->cameraLayoutScene->setSelectedCamera(cam);
 	if(cam) {
 		cameraInfoWidget->setEnabled(true);
 		inspector->setCurrentWidget(cameraInfoWidget);
@@ -992,14 +973,16 @@ void MainWindow::cameraSelected(CameraPtr cam) {
 //---------------------------------------------------------------------
 
 void MainWindow::imageSetSelected(ImageSetPtr imageSet) {
-	sceneCameraLayout->setSelectedCamera(CameraPtr());
-
+	ui->cameraLayoutScene->setSelectedCamera(CameraPtr());
 	if(imageSet) {
 		imageSetTable->setEnabled(true);
 		inspector->setCurrentWidget(imageSetTable);
-	}
 
-	ui->sceneViewer->updateGL();
+		std::vector<QString> imagePaths;
+		foreach(ProjectImagePtr image, imageSet->images())
+			imagePaths.push_back(image->file());
+		ui->capturedImagesScene->setImages(imagePaths);
+	}
 }
 
 //---------------------------------------------------------------------

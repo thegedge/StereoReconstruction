@@ -153,11 +153,21 @@ StereoWidget::StereoWidget(QWidget *parent)
     ui->setupUi(this);
 
 	//
+	ui->actionZoom_In->setShortcut(QKeySequence::ZoomIn);
+	ui->actionZoom_Out->setShortcut(QKeySequence::ZoomOut);
+
 	//
+	ui->toolZoomIn->setDefaultAction(ui->actionZoom_In);
+	ui->toolZoomOut->setDefaultAction(ui->actionZoom_Out);
+
 	//
 	ui->preview->setRenderHint(QPainter::Antialiasing);
 	ui->preview->setScene(&scene);
 	scene.installEventFilter(this);
+
+	//
+	addAction(ui->actionZoom_In);
+	addAction(ui->actionZoom_Out);
 }
 
 StereoWidget::~StereoWidget() {
@@ -484,15 +494,15 @@ void StereoWidget::updateParameters() {
 	else if(rightView->isRefractive())
 		ui->refractiveIndexSpinner->setValue(rightView->refractiveIndex());
 
-	connect(ui->lparamPixelXSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->lparamPixelYSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->lparamDistanceSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->rparamPixelXSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->rparamPixelYSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->rparamDistanceSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->refractiveIndexSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged(double)));
-	connect(ui->leftViewRefractive, SIGNAL(stateChanged(int)), SLOT(parameterChanged(int)));
-	connect(ui->rightViewRefractive, SIGNAL(stateChanged(int)), SLOT(parameterChanged(int)));
+	connect(ui->lparamPixelXSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->lparamPixelYSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->lparamDistanceSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->rparamPixelXSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->rparamPixelYSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->rparamDistanceSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->refractiveIndexSpinner, SIGNAL(valueChanged(double)), SLOT(parameterChanged()));
+	connect(ui->leftViewRefractive, SIGNAL(stateChanged(int)), SLOT(parameterChanged()));
+	connect(ui->rightViewRefractive, SIGNAL(stateChanged(int)), SLOT(parameterChanged()));
 
 	updateView();
 }
@@ -528,14 +538,6 @@ void StereoWidget::parameterChanged() {
 	const double total_err = calib.totalError(&average_err);
 	QString errorString = QString("%1 (avg %2 per feature)").arg(total_err).arg(average_err);
 	ui->totalErrorLabel->setText(errorString);
-}
-
-void StereoWidget::parameterChanged(int) {
-	parameterChanged();
-}
-
-void StereoWidget::parameterChanged(double) {
-	parameterChanged();
 }
 
 //---------------------------------------------------------------------
@@ -762,14 +764,6 @@ void StereoWidget::updateView() {
 	}
 }
 
-void StereoWidget::updateView(int) {
-	updateView();
-}
-
-void StereoWidget::updateView(double) {
-	updateView();
-}
-
 //---------------------------------------------------------------------
 
 bool StereoWidget::eventFilter(QObject *source, QEvent *evt) {
@@ -847,11 +841,11 @@ bool StereoWidget::eventFilter(QObject *source, QEvent *evt) {
 
 //---------------------------------------------------------------------
 
-void StereoWidget::zoomIn() {
+void StereoWidget::on_actionZoom_In_triggered() {
 	ui->preview->scale(1.2, 1.2);
 }
 
-void StereoWidget::zoomOut() {
+void StereoWidget::on_actionZoom_Out_triggered() {
 	if(ui->preview->transform().m11() >= 0.1)
 		ui->preview->scale(1.0 / 1.2, 1.0 / 1.2);
 }

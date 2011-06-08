@@ -84,27 +84,18 @@ protected:
 	QGraphicsItem * epipolarLineItem(CameraPtr left, CameraPtr right, QPen pen, int numDepths = 0);
 
 public slots:
-	//
+	//! .
 	void updateFeatures();
+
+	//! .
 	void updateFeatures(int row);
 
-	//
+	//! .
 	void updateView();
-
-	void zoomIn();
-	void zoomOut();
 
 private slots:
 	//
-	void updateView(int);
-	void updateView(double);
-
-	//
 	void parameterChanged();
-	void parameterChanged(int);
-	void parameterChanged(double);
-
-	//
 	void cameraChanged(int index);
 
 	//
@@ -126,6 +117,8 @@ private slots:
 	void on_computeDepthMapsButton_clicked();
 
 	void on_toolExport_clicked();
+	void on_actionZoom_In_triggered();
+	void on_actionZoom_Out_triggered();
 
 private:
     Ui::StereoWidget *ui;

@@ -28,6 +28,8 @@
 #include "project/imageset.hpp"
 #include "project/projectimage.hpp"
 
+#include <QDebug>
+
 //---------------------------------------------------------------------
 
 Q_DECLARE_METATYPE(ProjectImage *);
@@ -131,6 +133,9 @@ void ProjectExplorer::setProject(ProjectPtr project) {
 		connect(project.get(), SIGNAL(cameraRemoved(CameraPtr)), SLOT(removeCamera(CameraPtr)));
 		connect(project.get(), SIGNAL(imageSetAdded(ImageSetPtr)), SLOT(addImageSet(ImageSetPtr)));
 		connect(project.get(), SIGNAL(imageSetRemoved(ImageSetPtr)), SLOT(removeImageSet(ImageSetPtr)));
+
+		camerasItem->setExpanded(true);
+		imageSetsItem->setExpanded(true);
 	}
 
 	//
@@ -154,7 +159,11 @@ void ProjectExplorer::removeCamera(CameraPtr cam) {
 }
 
 void ProjectExplorer::addImageSet(ImageSetPtr imageSet) {
-	imageSetsItem->addChild(new ProjectItem(imageSet.get()));
+	QTreeWidgetItem *imageSetItem = new ProjectItem(imageSet.get());
+	imageSetsItem->addChild(imageSetItem);
+
+	foreach(ProjectImagePtr image, imageSet->images())
+		imageSetItem->addChild(new ProjectItem(image.get()));
 
 	// XXX Move to ProjectItem instead?
 	connect(imageSet.get(), SIGNAL(imageAdded(ProjectImagePtr)), SLOT(addImage(ProjectImagePtr)));

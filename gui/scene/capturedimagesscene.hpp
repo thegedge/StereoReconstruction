@@ -21,49 +21,44 @@
 #ifndef CAPTUREDIMAGESSCENE_H
 #define CAPTUREDIMAGESSCENE_H
 
-#include "sceneviewer.hpp"
+#include <QGraphicsView>
 #include "gui/captureimagesthread.hpp"
 
-#include <vector>
+//
+// Forward declarations
+//
+class QAction;
 
-//
-//
-//
-class QGLWidget;
+//! A scene for showing a set of [captured] images.
+class CapturedImagesScene : public QGraphicsView {
+	Q_OBJECT
 
-//! A scene meant to show a set of [captured] images.
-class CapturedImagesScene : public Scene {
 public:
 	typedef CaptureImagesThread<unsigned char>::ImageType Image;
 
 public:
-    CapturedImagesScene();
-	~CapturedImagesScene();
+    CapturedImagesScene(QWidget *parent = 0);
 
 public:
 	//! Set the images to be shown
 	void setImages(const std::vector<Image> &images);
 
-public:
-	//
-	// Scene implementation / overrides
-	//
-	void onPaint(QGLWidget *parent);
-	void onResize(int w, int h);
-	void onShow();
-	void onHide();
+	//! \copydoc setImages(const std::vector<Image> &images)
+	void setImages(const std::vector<QImage> &images);
 
-	bool onMousePress(QMouseEvent *evt);
-	bool onMouseMove(QMouseEvent *evt);
-	bool onMouseWheel(QWheelEvent *evt);
+	//! \copydoc setImages(const std::vector<Image> &images)
+	void setImages(const std::vector<QString> &images);
+
+private slots:
+	void on_actionZoom_In_triggered();
+	void on_actionZoom_Out_triggered();
+
+public:
+	void changeEvent(QEvent *);
 
 private:
-	std::vector<GLuint> textureHandles;
-
-	double transx, transy;   // translations for image viewing
-	double scale;            // image scale factor
-	double lastx, lasty;     // mouse movement
-	int width, height;
+	QAction *actionZoom_In;
+	QAction *actionZoom_Out;
 };
 
 #endif // CAPTUREDIMAGESSCENE_H

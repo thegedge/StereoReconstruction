@@ -22,12 +22,12 @@
 #define CAMERALAYOUTSCENE_H
 
 #include <QFont>
+#include <QGLWidget>
 #include <QMap>
 #include <QString>
 
 #include <Eigen/Core>
 
-#include "sceneviewer.hpp"
 #include "util/c++0x.hpp"
 
 FORWARD_DECLARE(Project);
@@ -39,7 +39,7 @@ FORWARD_DECLARE(Camera);
 class QGLWidget;
 
 //! An OpenGL scene that shows the layout of a project's cameras
-class CameraLayoutScene : public QObject, public Scene {
+class CameraLayoutScene : public QGLWidget {
 	Q_OBJECT
 
 public:
@@ -47,14 +47,17 @@ public:
 	virtual ~CameraLayoutScene();
 
 public:
-	virtual void onPaint(QGLWidget *parent);
-	virtual void onResize(int w, int h);
-	virtual void onShow();
-	virtual void onHide();
+	void initializeGL();
+	void paintGL();
+	void resizeGL(int w, int h);
 
-	virtual bool onMousePress(QMouseEvent *evt);
-	virtual bool onMouseMove(QMouseEvent *evt);
-	virtual bool onMouseWheel(QWheelEvent *evt);
+	void show();
+	void hide();
+
+	void mouseMoveEvent(QMouseEvent *evt);
+	void mousePressEvent(QMouseEvent *evt);
+	void mouseReleaseEvent(QMouseEvent *evt);
+	void wheelEvent(QWheelEvent *evt);
 
 public slots:
 	void updateCameras();

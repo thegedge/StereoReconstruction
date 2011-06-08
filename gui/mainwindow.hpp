@@ -187,10 +187,6 @@ private:
 	int currentImageIndex, numImagesToCapture;
 	int numCameras;
 #endif
-	//
-	std::shared_ptr<CapturedImagesScene> sceneImages;
-	std::shared_ptr<PointsViewScene>     scenePoints;
-	std::shared_ptr<CameraLayoutScene>   sceneCameraLayout;
 };
 
 

@@ -29,6 +29,7 @@
 
 #include <QGLWidget>
 #include <QDebug>
+#include <QMouseEvent>
 
 #include "project/project.hpp"
 #include "project/camera.hpp"
@@ -47,6 +48,7 @@
 
 using std::min;
 using std::fabs;
+using namespace Eigen;
 
 //---------------------------------------------------------------------
 
@@ -57,6 +59,7 @@ CameraLayoutScene::CameraLayoutScene()
 {
 	font.setBold(true);
 	font.setPointSize(18);
+	setCursor(QCursor(Qt::OpenHandCursor));
 }
 
 CameraLayoutScene::~CameraLayoutScene()
@@ -64,35 +67,50 @@ CameraLayoutScene::~CameraLayoutScene()
 
 //---------------------------------------------------------------------
 
-void CameraLayoutScene::onShow() {
+void CameraLayoutScene::initializeGL() {
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LINE_STIPPLE);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_NORMALIZE);
+	glDisable(GL_DITHER);
+
 	glLineWidth(2);
 	glDepthFunc(GL_LESS);
-	glDisable(GL_CULL_FACE);
+	glBlendFunc(GL_ONE, GL_ONE);
 	glClearColor(1, 1, 1, 1);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	updateCameras();
 }
-
-void CameraLayoutScene::onHide() {
-	glLineWidth(1);
-}
-
 //---------------------------------------------------------------------
 
 void CameraLayoutScene::setSelectedCamera(CameraPtr cam) {
 	selectedCamera = cam;
+	makeCurrent();
 	updateViewMatrix();
-	updateCameras();
+	updateGL();
 }
 
 //---------------------------------------------------------------------
 
 void CameraLayoutScene::setProject(ProjectPtr project) {
 	if(this->project != project) {
+		foreach(CameraPtr cam, project->cameras()) {
+			connect(cam.get(),
+			        SIGNAL(intrinsicParametersChanged(const Eigen::Matrix3d &)),
+			        SLOT(updateGL()));
+
+			connect(cam.get(),
+			        SIGNAL(extrinsicParametersChanged(const Eigen::Matrix3d &, const Eigen::Vector3d &)),
+			        SLOT(updateGL()));
+
+			connect(cam.get(),
+			        SIGNAL(refractiveParametersChanged(const Plane3d &, double)),
+			        SLOT(updateGL()));
+		}
+
 		this->project = project;
 		selectedCamera.reset();
 		updateCameras();
+		updateGL();
 	}
 }
 
@@ -100,7 +118,7 @@ void CameraLayoutScene::updateCameras() {
 	if(project) {
 		cx = cy = cz = 0.0;
 		foreach(CameraPtr cam, project->cameras()) {
-			const Eigen::Vector3d &C = cam->C();
+			const Vector3d &C = cam->C();
 			cx += C[0];
 			cy += C[1];
 			cz += C[2];
@@ -113,7 +131,7 @@ void CameraLayoutScene::updateCameras() {
 
 		fx = fy = fz = std::numeric_limits<double>::infinity();
 		foreach(CameraPtr cam, project->cameras()) if(cam) {
-			const Eigen::Vector3d &C = cam->C();
+			const Vector3d &C = cam->C();
 			fx = min(fx, 1.0 / fabs(C[0] - cx));
 			fy = min(fy, 1.0 / fabs(C[1] - cy));
 			fz = min(fz, 1.0 / fabs(C[2] - cz));
@@ -131,7 +149,7 @@ void CameraLayoutScene::updateCameras() {
 
 //---------------------------------------------------------------------
 
-void CameraLayoutScene::onResize(int w, int h) {
+void CameraLayoutScene::resizeGL(int w, int h) {
 	GLdouble ratio = static_cast<GLdouble>(w) / h;
 	width = w;
 	height = h;
@@ -149,7 +167,7 @@ void CameraLayoutScene::onResize(int w, int h) {
 
 //---------------------------------------------------------------------
 
-void CameraLayoutScene::onPaint(QGLWidget *parent) {
+void CameraLayoutScene::paintGL() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	if(project && project->cameras().size() > 0) {
 		CameraPtr selectedCamera = this->selectedCamera.lock();
@@ -159,14 +177,14 @@ void CameraLayoutScene::onPaint(QGLWidget *parent) {
 		//
 		glBegin(GL_LINES);
 		foreach(CameraPtr cam, project->cameras()) {
-			Eigen::Matrix3d R = 0.5*cam->R();
-			const Eigen::Vector3d &C = cam->C();
+			Matrix3d R = 0.5*cam->R();
+			const Vector3d &C = cam->C();
 
 			double x = (C[0] - cx)*fx;
 			double y = (C[1] - cy)*fy;
 			double z = (C[2] - cz)*fz;
 
-			if(cam == selectedCamera) glColor3f(1, 1, 1);
+			if(cam == selectedCamera) glColor3f(0, 0, 0);
 
 			//
 			if(cam != selectedCamera) glColor3f(1, 0, 0);
@@ -189,15 +207,15 @@ void CameraLayoutScene::onPaint(QGLWidget *parent) {
 				// Find verticies of a quad that represents the plane
 				Plane3d plane = cam->fromLocalToGlobal(cam->plane());
 
-				const Eigen::Matrix3d &R = cam->R();
+				const Matrix3d &R = cam->R();
 				double x = (plane.x0().x() - cx)*fx;
 				double y = (plane.x0().y() - cy)*fy;
 				double z = (plane.x0().z() - cz)*fz;
 
-				Eigen::Vector3d p(x, y, z);
-				Eigen::Vector3d vz = plane.normal();
-				Eigen::Vector3d vx = vz.cross(R.row(1)).normalized();
-				Eigen::Vector3d vy = vx.cross(vz);
+				Vector3d p(x, y, z);
+				Vector3d vz = plane.normal();
+				Vector3d vx = vz.cross(R.row(1)).normalized();
+				Vector3d vy = vx.cross(vz);
 
 				//vx *= 0.5;
 				//vy *= 0.5;
@@ -215,7 +233,7 @@ void CameraLayoutScene::onPaint(QGLWidget *parent) {
 					glVertex3f(p.x(), p.y(), p.z());
 				glEnd();
 
-				p = Eigen::Vector3d(x, y, z);
+				p = Vector3d(x, y, z);
 
 				//glColor4f(1, 1, 1, 1);
 				glColor4f(0, 0, 0, 1);
@@ -234,15 +252,14 @@ void CameraLayoutScene::onPaint(QGLWidget *parent) {
 
 		// Camera labels
 		glDisable(GL_DEPTH_TEST);
-		glColor3f(1, 1, 1);
+		glColor3f(0, 0, 0);
 		foreach(CameraPtr cam, project->cameras()) {
-			const Eigen::Vector3d &C = cam->C();
-			parent->renderText(
-					(C[0] - cx)*fx,
-					(C[1] - cy)*fy,
-					(C[2] - cz)*fz,
-					cam->name(),
-					font);
+			const Vector3d &C = cam->C();
+			renderText((C[0] - cx)*fx,
+			           (C[1] - cy)*fy,
+			           (C[2] - cz)*fz,
+			           cam->name(),
+			           font);
 		}
 		glEnable(GL_DEPTH_TEST);
 	}
@@ -257,8 +274,8 @@ void CameraLayoutScene::updateViewMatrix() {
 
 # if 0
 	if(selectedCamera) {
-		const Eigen::Matrix3d &R = selectedCamera->R();
-		const Eigen::Vector3d &C = selectedCamera->C();
+		const Matrix3d &R = selectedCamera->R();
+		const Vector3d &C = selectedCamera->C();
 
 		double x = C[0]*fx;
 		double y = C[1]*fy;
@@ -282,8 +299,8 @@ void CameraLayoutScene::updateViewMatrix() {
 		gluLookAt(x, y, z, lx, ly, lz, ux, uy, uz);
 #else
 	if(CameraPtr selectedCamera = this->selectedCamera.lock()) {
-		const Eigen::Matrix3d &R = selectedCamera->R();
-		const Eigen::Vector3d &C = selectedCamera->C();
+		const Matrix3d &R = selectedCamera->R();
+		const Vector3d &C = selectedCamera->C();
 
 		double x = (C[0] - cx)*fx;
 		double y = (C[1] - cy)*fy;
@@ -308,17 +325,21 @@ void CameraLayoutScene::updateViewMatrix() {
 
 //---------------------------------------------------------------------
 
-bool CameraLayoutScene::onMousePress(QMouseEvent *evt) {
+void CameraLayoutScene::mousePressEvent(QMouseEvent *evt) {
+	setCursor(QCursor(Qt::ClosedHandCursor));
 	lastx = evt->x();
 	lasty = evt->y();
-	return false;
+}
+
+void CameraLayoutScene::mouseReleaseEvent(QMouseEvent *) {
+	setCursor(QCursor(Qt::OpenHandCursor));
 }
 
 //---------------------------------------------------------------------
 
-bool CameraLayoutScene::onMouseMove(QMouseEvent *evt) {
+void CameraLayoutScene::mouseMoveEvent(QMouseEvent *evt) {
 	if(evt->buttons() == Qt::NoButton)
-		return false;
+		return;
 
 	int deltax = evt->x() - lastx;
 	int deltay = evt->y() - lasty;
@@ -333,19 +354,17 @@ bool CameraLayoutScene::onMouseMove(QMouseEvent *evt) {
 		if(phi < 0)    phi += M_PI;
 		if(phi > M_PI) phi -= M_PI;
 
-		updateViewMatrix();
-
 		lastx = evt->x();
 		lasty = evt->y();
-		return true;
-	}
 
-	return false;
+		updateViewMatrix();
+		updateGL();
+	}
 }
 
 //---------------------------------------------------------------------
 
-bool CameraLayoutScene::onMouseWheel(QWheelEvent *evt) {
+void CameraLayoutScene::wheelEvent(QWheelEvent *evt) {
 	double scale = -120.0;
 	if(evt->modifiers() & Qt::ControlModifier)
 		scale = -24.0;
@@ -356,8 +375,7 @@ bool CameraLayoutScene::onMouseWheel(QWheelEvent *evt) {
 	else if(radius > 100) radius = 100;
 
 	updateViewMatrix();
-
-	return true;
+	updateGL();
 }
 
 //---------------------------------------------------------------------

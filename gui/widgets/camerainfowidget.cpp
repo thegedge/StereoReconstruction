@@ -26,6 +26,7 @@
 #include "radiometriccalibrationwidget.hpp"
 
 #include <QBoxLayout>
+#include <QDebug>
 
 //---------------------------------------------------------------------
 
@@ -154,9 +155,9 @@ void CameraInfoWidget::updateCamera() {
 	currentCamera->setR(R);
 
 	Eigen::Vector3d C = currentCamera->C();
-	K[0] = toDouble(ui->copX->text(), K[0]);
-	K[1] = toDouble(ui->copY->text(), K[1]);
-	K[2] = toDouble(ui->copZ->text(), K[2]);
+	C[0] = toDouble(ui->copX->text(), C[0]);
+	C[1] = toDouble(ui->copY->text(), C[1]);
+	C[2] = toDouble(ui->copZ->text(), C[2]);
 	currentCamera->setC(C);
 }
 
