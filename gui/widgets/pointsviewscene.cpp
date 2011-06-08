@@ -19,7 +19,7 @@
 //
 //---------------------------------------------------------------------
 #include "pointsviewscene.hpp"
-#include "shaders.hpp"
+#include "gui/shaders.hpp"
 
 #define _USE_MATH_DEFINES
 

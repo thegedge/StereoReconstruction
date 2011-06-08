@@ -434,19 +434,19 @@
   <customwidget>
    <class>CameraLayoutScene</class>
    <extends>QWidget</extends>
-   <header>gui/scene/cameralayoutscene.hpp</header>
+   <header>gui/widgets/cameralayoutscene.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PointsViewScene</class>
    <extends>QWidget</extends>
-   <header>gui/scene/pointsviewscene.hpp</header>
+   <header>gui/widgets/pointsviewscene.hpp</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CapturedImagesScene</class>
    <extends>QWidget</extends>
-   <header>gui/scene/capturedimagesscene.hpp</header>
+   <header>gui/widgets/capturedimagesscene.hpp</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

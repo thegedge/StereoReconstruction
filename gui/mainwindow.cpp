@@ -56,13 +56,9 @@
 #include "gui/dialogs/optionsdialog.hpp"
 #include "gui/dialogs/pmvsdialog.hpp"
 #include "gui/dialogs/progressdialog.hpp"
-#include "gui/scene/capturedimagesscene.hpp"
-#include "gui/scene/pointsviewscene.hpp"
-#include "gui/scene/cameralayoutscene.hpp"
 #include "gui/widgets/camerainfowidget.hpp"
 #include "gui/widgets/imagesettable.hpp"
 #include "gui/widgets/projectexplorer.hpp"
-#include "gui/widgets/stereowidget.hpp"
 #include "gui/widgets/taskprogresswidget.hpp"
 
 #include "project/project.hpp"

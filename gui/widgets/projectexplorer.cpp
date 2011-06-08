@@ -21,7 +21,6 @@
 #include "projectexplorer.hpp"
 #include "ui_projectexplorer.h"
 
-#include "gui/scene/capturedimagesscene.hpp"
 #include "gui/widgets/projectitem.hpp"
 #include "project/project.hpp"
 #include "project/camera.hpp"

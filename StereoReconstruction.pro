@@ -34,7 +34,6 @@ isEmpty(MAIN_CPP):MAIN_CPP = main.cpp
 SOURCES += $${MAIN_CPP} \
 	gui/*.cpp \
 	gui/dialogs/*.cpp \
-	gui/scene/*.cpp \
 	gui/widgets/*.cpp \
 	gui/gvitems/*.cpp \
 	project/*.cpp \
@@ -46,7 +45,6 @@ SOURCES += $${MAIN_CPP} \
 
 HEADERS += gui/*.h* \
 	gui/dialogs/*.hpp \
-	gui/scene/*.hpp \
 	gui/widgets/*.hpp \
 	gui/gvitems/*.hpp \
 	project/*.hpp \
