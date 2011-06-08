@@ -45,6 +45,12 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0" colspan="2">
     <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="tabPosition">
       <enum>QTabWidget::West</enum>
      </property>
@@ -65,8 +71,14 @@
        <property name="bottomMargin">
         <number>10</number>
        </property>
-       <item row="0" column="0">
+       <item row="0" column="0" rowspan="2">
         <widget class="QGroupBox" name="groupBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Stereo Parameters</string>
          </property>
@@ -208,7 +220,7 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
+       <item row="0" column="3" colspan="2">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -221,8 +233,14 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="1">
+       <item row="0" column="1" rowspan="2">
         <widget class="QGroupBox" name="groupBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Error</string>
          </property>
@@ -307,7 +325,7 @@ over all correspondences given the current parameters</string>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
            <horstretch>1</horstretch>
-           <verstretch>1</verstretch>
+           <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="title">
@@ -374,18 +392,6 @@ over all correspondences given the current parameters</string>
           </item>
           <item row="2" column="0" colspan="3">
            <widget class="QListWidget" name="imageSetsList">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>1</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
             <property name="contextMenuPolicy">
              <enum>Qt::CustomContextMenu</enum>
             </property>
@@ -422,16 +428,16 @@ Check the image sets to use for calibration and feature visualization.</string>
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>1</horstretch>
-           <verstretch>1</verstretch>
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
           </sizepolicy>
          </property>
          <property name="title">
           <string>Refractive Parameers</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0,0,0,0">
-          <item row="5" column="0" rowspan="2" colspan="2">
+         <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0,0,0">
+          <item row="4" column="0" rowspan="2" colspan="2">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Normal:</string>
@@ -441,7 +447,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="3">
+          <item row="4" column="3">
            <widget class="QDoubleSpinBox" name="lparamPixelXSpinner">
             <property name="accelerated">
              <bool>true</bool>
@@ -460,7 +466,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="2">
+          <item row="4" column="2">
            <widget class="QLabel" name="label_5">
             <property name="text">
              <string>x =</string>
@@ -473,7 +479,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="2">
+          <item row="5" column="2">
            <widget class="QLabel" name="label_4">
             <property name="text">
              <string>y =</string>
@@ -486,7 +492,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="3">
+          <item row="5" column="3">
            <widget class="QDoubleSpinBox" name="lparamPixelYSpinner">
             <property name="accelerated">
              <bool>true</bool>
@@ -505,7 +511,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="7" column="0" colspan="2">
+          <item row="6" column="0" colspan="2">
            <widget class="QLabel" name="label_6">
             <property name="text">
              <string>Distance:</string>
@@ -518,14 +524,14 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="5" rowspan="5">
+          <item row="3" column="5" rowspan="4">
            <widget class="Line" name="line">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
            </widget>
           </item>
-          <item row="5" column="7">
+          <item row="4" column="7">
            <widget class="QLabel" name="label_7">
             <property name="text">
              <string>x=</string>
@@ -538,7 +544,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="6" rowspan="2">
+          <item row="4" column="6" rowspan="2">
            <widget class="QLabel" name="label_2">
             <property name="text">
              <string>Normal:</string>
@@ -548,7 +554,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="7" column="6">
+          <item row="6" column="6">
            <widget class="QLabel" name="label_8">
             <property name="text">
              <string>Distance:</string>
@@ -561,7 +567,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="7">
+          <item row="5" column="7">
            <widget class="QLabel" name="label_9">
             <property name="text">
              <string>y=</string>
@@ -574,7 +580,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="7" column="7" colspan="2">
+          <item row="6" column="7" colspan="2">
            <widget class="QDoubleSpinBox" name="rparamDistanceSpinner">
             <property name="accelerated">
              <bool>true</bool>
@@ -593,7 +599,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="6" column="8">
+          <item row="5" column="8">
            <widget class="QDoubleSpinBox" name="rparamPixelYSpinner">
             <property name="accelerated">
              <bool>true</bool>
@@ -612,7 +618,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="5" column="8">
+          <item row="4" column="8">
            <widget class="QDoubleSpinBox" name="rparamPixelXSpinner">
             <property name="accelerated">
              <bool>true</bool>
@@ -631,7 +637,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="8" column="8">
+          <item row="7" column="8">
            <widget class="QPushButton" name="calibrateButton">
             <property name="text">
              <string>Calibrate</string>
@@ -667,7 +673,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="8" column="6" colspan="2">
+          <item row="7" column="6" colspan="2">
            <widget class="QPushButton" name="resetParametersButton">
             <property name="text">
              <string>Reset</string>
@@ -677,7 +683,7 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
            </widget>
           </item>
-          <item row="7" column="2" colspan="2">
+          <item row="6" column="2" colspan="2">
            <widget class="QDoubleSpinBox" name="lparamDistanceSpinner">
             <property name="accelerated">
              <bool>true</bool>
@@ -693,20 +699,6 @@ Check the image sets to use for calibration and feature visualization.</string>
             </property>
             <property name="value">
              <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="4">
-           <widget class="QCheckBox" name="lScaleFocalLength">
-            <property name="text">
-             <string>Scale Focal Length</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="6" colspan="3">
-           <widget class="QCheckBox" name="rScaleFocalLength">
-            <property name="text">
-             <string>Scale Focal Length</string>
             </property>
            </widget>
           </item>
@@ -875,11 +867,9 @@ Check the image sets to use for calibration and feature visualization.</string>
   <tabstop>rightViewRefractive</tabstop>
   <tabstop>imageSetsList</tabstop>
   <tabstop>refractiveIndexSpinner</tabstop>
-  <tabstop>lScaleFocalLength</tabstop>
   <tabstop>lparamPixelXSpinner</tabstop>
   <tabstop>lparamPixelYSpinner</tabstop>
   <tabstop>lparamDistanceSpinner</tabstop>
-  <tabstop>rScaleFocalLength</tabstop>
   <tabstop>rparamPixelXSpinner</tabstop>
   <tabstop>rparamPixelYSpinner</tabstop>
   <tabstop>rparamDistanceSpinner</tabstop>

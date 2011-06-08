@@ -255,7 +255,7 @@ public: // LevenbergMarquardt::Function implementation
 			Vector3d normal = view->Kinv() * Vector3d(model[3*view_index + 1], model[3*view_index + 2], 1);
 
 			normal.normalize();
-			P[view_index].setX0(model[3*view_index + 3]*normal);
+			P[view_index].setDistance(model[3*view_index + 3]);
 			P[view_index].setNormal(normal);
 			view->setRefractiveIndex(model[0]);
 			view->setPlane(P[view_index]);

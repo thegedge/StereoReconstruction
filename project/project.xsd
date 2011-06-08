@@ -186,9 +186,6 @@
 					<!-- Exposure time of the image (in ms) -->
 					<xsd:attribute name="exposure" type="xsd:double" use="optional"/>
 
-					<!-- Path to a mask for the image, relative to the root path of the set (optional) -->
-					<xsd:attribute name="mask" type="xsd:string" use="optional"/>
-
 					<!-- Whether or not this is the default image for this camera -->
 					<xsd:attribute name="default" use="optional">
 						<xsd:simpleType>

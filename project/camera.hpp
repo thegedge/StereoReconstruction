@@ -21,37 +21,28 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <QObject>
 #include <vector>
-
-#include <Eigen/Core>
 #include <boost/array.hpp>
+#include <Eigen/Core>
 
 #include "features/featuredb.hpp"
 #include "util/c++0x.hpp"
 #include "util/plane.hpp"
 #include "util/ray.hpp"
 
-
-//! Camera's RGB response (used mostly for HDR)
-struct Response {
-	double v[3];
-
-	Response() { v[0] = v[1] = v[2] = 0.0; }
-	Response(double r, double g, double b) { v[0] = r; v[1] = g; v[2] = b; }
-
-	double& operator[](int index)      { return v[index]; }
-	double operator[](int index) const { return v[index]; }
-};
-
 //
 //
 //
 typedef Eigen::Matrix<double, 3, 4> ProjMat;
 typedef boost::array<double, 5> LensDistortions;
+typedef Eigen::Vector3d Response;
 typedef std::vector<Response> Responses;
 
 //! Camera used in the project
-class Camera {
+class Camera : public QObject {
+	Q_OBJECT
+
 public:
 	Camera(QString id, QString name = QString());
 
@@ -59,9 +50,12 @@ public:
 	QString id() const { return id_; }
 
 	QString name() const { return name_; }
-	void setName(QString name) { name_ = name; }
-
-	int index() const { return index_; }
+	void setName(QString name) {
+		if(name_ != name) {
+			name_ = name;
+			emit nameChanged(name);
+		}
+	}
 
 	const ProjMat & P() const { return P_; }
 	const Eigen::Vector3d & t() const { return t_; }
@@ -83,13 +77,11 @@ public:
 	const Responses & response() const { return response_; }
 	const Plane3d & plane() const { return plane_; }
 	double refractiveIndex() const { return refractiveIndex_; }
-	double focalLengthScale() const { return focalLengthScale_; }
 
 	void setLensDistortion(const LensDistortions &distortion);
 	void setResponse(const Responses &response);
 	void setPlane(const Plane3d &plane);
 	void setRefractiveIndex(double n);
-	void setFocalLengthScale(double v);
 
 	bool isRefractive() const { return isRefractive_; }
 	bool isDistorted() const { return isDistorted_; }
@@ -155,6 +147,14 @@ public:
 	//! Take a 3D ray from the camera's local space to global space
 	Ray3d fromLocalToGlobal(const Ray3d &p) const;
 
+signals:
+	void nameChanged(QString name);
+	void intrinsicParametersChanged(const Eigen::Matrix3d &K);
+	void extrinsicParametersChanged(const Eigen::Matrix3d &R, const Eigen::Vector3d &C);
+	void lensDistortionChanged(const LensDistortions &distortion);
+	void responseChanged(const Responses &response);
+	void refractiveParametersChanged(const Plane3d &plane, double refractiveIndex);
+
 private:
 	//! Updates the projection matrix based on K, R, and t
 	void updateProjection();
@@ -166,11 +166,8 @@ private:
 	void updatePrincipleRay();
 
 private:
-	friend class Project;
-
 	QString id_;
 	QString name_;
-	int index_;
 
 	ProjMat P_;         //! 3x4 projection matrix
 	Eigen::Vector3d t_; //! translation vector
@@ -186,7 +183,6 @@ private:
 
 	Plane3d plane_;           //! refractive plane separating camera from medium
 	double refractiveIndex_;  //! refractive ratio of other medium and medium camera is in
-	double focalLengthScale_; //! value to scale the focal length by
 
 	bool isRefractive_;  //! whether or not this view is behind a refractive interface
 	bool isDistorted_;   //! whether or not there is a nonzero distortion coefficient

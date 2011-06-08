@@ -18,32 +18,43 @@
 // with StereoReconstruction. If not, see <http:www.gnu.org/licenses/>.
 //
 //---------------------------------------------------------------------
-#include "comboboxitemdelegate.hpp"
+#include "cameraselectoritemdelegate.hpp"
+#include "project/project.hpp"
+#include "project/camera.hpp"
+
 #include <QComboBox>
+#include <QDebug>
 
 //---------------------------------------------------------------------
 
-ComboBoxItemDelegate::ComboBoxItemDelegate(QStringList options, QStringList data, QObject *parent)
+CameraSelectorItemDelegate::CameraSelectorItemDelegate(ProjectPtr project, QObject *parent)
     : QStyledItemDelegate(parent)
-    , options(options)
-    , data(data)
+    , project(project)
 { }
 
 //---------------------------------------------------------------------
 
-QWidget* ComboBoxItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
+QWidget* CameraSelectorItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &, const QModelIndex &) const {
     QComboBox *cb = new QComboBox(parent);
 
-	cb->addItems(options);
-	for(int index = 0; index < std::min(options.size(), data.size()); ++index)
-		cb->setItemData(index, data[index]);
+	cb->addItem(tr("<no camera>"), QString());
+	if(project) {
+		foreach(CameraPtr cam, project->cameras())
+			cb->addItem(cam->name(), cam->id());
+	}
 
     return cb;
 }
 
 //---------------------------------------------------------------------
 
-void ComboBoxItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+void CameraSelectorItemDelegate::setProject(ProjectPtr project) {
+	this->project = project;
+}
+
+//---------------------------------------------------------------------
+
+void CameraSelectorItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     if(QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
         QString current = index.data(Qt::EditRole).toString();
         int currentIndex = cb->findText(current);
@@ -56,11 +67,13 @@ void ComboBoxItemDelegate::setEditorData(QWidget *editor, const QModelIndex &ind
 
 //---------------------------------------------------------------------
 
-void ComboBoxItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-    if(QComboBox *cb = qobject_cast<QComboBox *>(editor))
+void CameraSelectorItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+    if(QComboBox *cb = qobject_cast<QComboBox *>(editor)) {
         model->setData(index, cb->currentText(), Qt::EditRole);
-    else
+		model->setData(index, cb->itemData(cb->currentIndex()), Qt::UserRole);
+    } else {
         QStyledItemDelegate::setModelData(editor, model, index);
+	}
 }
 
 //---------------------------------------------------------------------

@@ -22,12 +22,15 @@
 #include "ui_projectexplorer.h"
 
 #include "gui/scene/capturedimagesscene.hpp"
+#include "gui/widgets/projectitem.hpp"
 #include "project/project.hpp"
 #include "project/camera.hpp"
 #include "project/imageset.hpp"
 #include "project/projectimage.hpp"
 
-#include <QDebug>
+//---------------------------------------------------------------------
+
+Q_DECLARE_METATYPE(ProjectImage *);
 
 //---------------------------------------------------------------------
 namespace {
@@ -47,7 +50,16 @@ namespace {
 		while(item->childCount() > 0)
 			item->removeChild(item->child(0));
 	}
+
+	//! Expands all parents of the given item so it becomes "exposed"
+	void exposeItem(QTreeWidgetItem *item) {
+		if(item) {
+			while((item = item->parent()))
+				item->setExpanded(true);
+		}
+	}
 }
+
 //---------------------------------------------------------------------
 //
 ProjectExplorer::ProjectExplorer(QWidget *parent)
@@ -69,12 +81,12 @@ ProjectExplorer::ProjectExplorer(QWidget *parent)
 	//
 	camerasItem->setText(0, tr("Cameras"));
 	camerasItem->setFont(0, boldFont);
+	camerasItem->setExpanded(true);
+	ui->treeWidget->addTopLevelItem(camerasItem);
 
 	imageSetsItem->setText(0, tr("Image Sets"));
 	imageSetsItem->setFont(0, boldFont);
-
-	//
-	ui->treeWidget->addTopLevelItem(camerasItem);
+	imageSetsItem->setExpanded(true);
 	ui->treeWidget->addTopLevelItem(imageSetsItem);
 
 	//
@@ -95,52 +107,31 @@ void ProjectExplorer::forwardPopupMenu(const QPoint &p) {
 //---------------------------------------------------------------------
 
 void ProjectExplorer::setProject(ProjectPtr project) {
+	// Disconnect slots
+	if(this->project)
+		this->project->disconnect(this);
+
 	//
 	removeAllChildren(camerasItem);
 	removeAllChildren(imageSetsItem);
 
-	// Add cameras
-	foreach(CameraPtr cam, project->cameras()) {
-		QTreeWidgetItem *cameraItem = new QTreeWidgetItem;
-		QString tooltip = QString("Name: %1\nId: %2").arg(cam->name(), cam->id());
-		cameraItem->setText(0, cam->name());
-		cameraItem->setFlags(cameraItem->flags() | Qt::ItemIsEditable);
-		cameraItem->setData(0, Qt::UserRole, cam->id());
-		cameraItem->setToolTip(0, tooltip);
-		camerasItem->addChild(cameraItem);
-	}
+	// Add stuff
+	if(project) {
+		foreach(CameraPtr cam, project->cameras())
+			camerasItem->addChild(new ProjectItem(cam.get()));
 
-	// Add image sets
-	foreach(ImageSetPtr imageSet, project->imageSets()) {
-		QTreeWidgetItem *imageSetItem = new QTreeWidgetItem;
-		imageSetItem->setText(0, imageSet->name());
-		imageSetItem->setFlags(imageSetItem->flags() | Qt::ItemIsEditable);
-		imageSetItem->setData(0, Qt::UserRole, imageSet->id());
-		imageSetItem->setToolTip(0,
-			 QString("Name: %1\nRoot: %2")
-				 .arg(imageSet->name())
-				 .arg(imageSet->root().absolutePath()) );
-		imageSetsItem->addChild(imageSetItem);
-
-		// Add images
-		foreach(ProjectImagePtr image, imageSet->images()) {
-			QString camera = tr("<no camera>");
-			if(image->camera())
-				camera = image->camera()->name();
-
-			QTreeWidgetItem *imageItem = new QTreeWidgetItem;
-			imageItem->setText(0, imageSet->root().relativeFilePath(image->file().absoluteFilePath()));
-			imageItem->setToolTip(0,
-				QString("Path: %1\nCamera: %2\nExposure: %3")
-					.arg(image->file().absoluteFilePath(), camera)
-					.arg(image->exposure(), 0, 'f', 2));
-			imageSetItem->addChild(imageItem);
+		foreach(ImageSetPtr imageSet, project->imageSets()) {
+			ProjectItem *imageSetItem = new ProjectItem(imageSet.get());
+			imageSetsItem->addChild(imageSetItem);
+			foreach(ProjectImagePtr image, imageSet->images())
+				imageSetItem->addChild(new ProjectItem(image.get()));
 		}
-	}
 
-	// Initially start expanded
-	camerasItem->setExpanded(true);
-	imageSetsItem->setExpanded(true);
+		connect(project.get(), SIGNAL(cameraAdded(CameraPtr)), SLOT(addCamera(CameraPtr)));
+		connect(project.get(), SIGNAL(cameraRemoved(CameraPtr)), SLOT(removeCamera(CameraPtr)));
+		connect(project.get(), SIGNAL(imageSetAdded(ImageSetPtr)), SLOT(addImageSet(ImageSetPtr)));
+		connect(project.get(), SIGNAL(imageSetRemoved(ImageSetPtr)), SLOT(removeImageSet(ImageSetPtr)));
+	}
 
 	//
 	this->project = project;
@@ -148,26 +139,130 @@ void ProjectExplorer::setProject(ProjectPtr project) {
 
 //---------------------------------------------------------------------
 
-void ProjectExplorer::editCamera(CameraPtr cam) {
+void ProjectExplorer::addCamera(CameraPtr cam) {
+	camerasItem->addChild(new ProjectItem(cam.get()));
+}
+
+void ProjectExplorer::removeCamera(CameraPtr cam) {
 	for(int index = 0; index < camerasItem->childCount(); ++index) {
 		QTreeWidgetItem *item = camerasItem->child(index);
 		if(item->data(0, Qt::UserRole).toString() == cam->id()) {
-			item->setSelected(true);
-			ui->treeWidget->editItem(item);
-			break;
+			camerasItem->removeChild(item);
+			return;
 		}
 	}
 }
 
-void ProjectExplorer::editImageSet(ImageSetPtr imageSet) {
+void ProjectExplorer::addImageSet(ImageSetPtr imageSet) {
+	imageSetsItem->addChild(new ProjectItem(imageSet.get()));
+
+	// XXX Move to ProjectItem instead?
+	connect(imageSet.get(), SIGNAL(imageAdded(ProjectImagePtr)), SLOT(addImage(ProjectImagePtr)));
+	connect(imageSet.get(), SIGNAL(imageRemoved(ProjectImagePtr)), SLOT(removeImage(ProjectImagePtr)));
+}
+
+void ProjectExplorer::removeImageSet(ImageSetPtr imageSet) {
 	for(int index = 0; index < imageSetsItem->childCount(); ++index) {
 		QTreeWidgetItem *item = imageSetsItem->child(index);
 		if(item->data(0, Qt::UserRole).toString() == imageSet->id()) {
-			item->setSelected(true);
-			ui->treeWidget->editItem(item);
-			break;
+			imageSetsItem->removeChild(item);
+			imageSet->disconnect(this);
+			return;
 		}
 	}
+}
+
+//---------------------------------------------------------------------
+
+void ProjectExplorer::addImage(ProjectImagePtr image) {
+	ImageSetPtr imageSet = image->imageSet();
+	for(int index = 0; index < imageSetsItem->childCount(); ++index) {
+		QTreeWidgetItem *item = imageSetsItem->child(index);
+		if(item->data(0, Qt::UserRole).toString() == imageSet->id()) {
+			item->addChild(new ProjectItem(image.get()));
+			return;
+		}
+	}
+}
+
+void ProjectExplorer::removeImage(ProjectImagePtr image) {
+	ImageSetPtr imageSet = image->imageSet();
+	for(int index = 0; index < imageSetsItem->childCount(); ++index) {
+		QTreeWidgetItem *item = imageSetsItem->child(index);
+		if(item->data(0, Qt::UserRole).toString() == imageSet->id()) {
+			for(int index = 0; index < item->childCount(); ++index) {
+				QTreeWidgetItem *item2 = item->child(index);
+				if(item2->data(0, Qt::UserRole).value<QObject *>() == image.get()) {
+					item->removeChild(item2);
+					return;
+				}
+			}
+		}
+	}
+}
+
+//---------------------------------------------------------------------
+
+void ProjectExplorer::editCamera(CameraPtr cam) {
+	if(QTreeWidgetItem *item = itemForCamera(cam)) {
+		exposeItem(item);
+		ui->treeWidget->selectionModel()->clear();
+		item->setSelected(true);
+		ui->treeWidget->editItem(item);
+	}
+}
+
+void ProjectExplorer::editImageSet(ImageSetPtr imageSet) {
+	if(QTreeWidgetItem *item = itemForImageSet(imageSet)) {
+		exposeItem(item);
+		ui->treeWidget->selectionModel()->clear();
+		item->setSelected(true);
+		ui->treeWidget->editItem(item);
+	}
+}
+
+void ProjectExplorer::editImage(ProjectImagePtr image) {
+	if(QTreeWidgetItem *item = itemForImage(image)) {
+		exposeItem(item);
+		ui->treeWidget->selectionModel()->clear();
+		item->setSelected(true);
+		ui->treeWidget->expandItem(item);
+	}
+}
+
+//---------------------------------------------------------------------
+
+QTreeWidgetItem * ProjectExplorer::itemForCamera(CameraPtr cam) {
+	for(int index = 0; index < camerasItem->childCount(); ++index) {
+		QTreeWidgetItem *item = camerasItem->child(index);
+		if(item->data(0, Qt::UserRole).toString() == cam->id())
+			return item;
+	}
+	return nullptr;
+}
+
+QTreeWidgetItem * ProjectExplorer::itemForImageSet(ImageSetPtr imageSet) {
+	for(int index = 0; index < imageSetsItem->childCount(); ++index) {
+		QTreeWidgetItem *item = imageSetsItem->child(index);
+		if(item->data(0, Qt::UserRole).toString() == imageSet->id())
+			return item;
+	}
+	return nullptr;
+}
+
+QTreeWidgetItem * ProjectExplorer::itemForImage(ProjectImagePtr image) {
+	ImageSetPtr imageSet = image->imageSet();
+	for(int index = 0; index < imageSetsItem->childCount(); ++index) {
+		QTreeWidgetItem *item = imageSetsItem->child(index);
+		if(item->data(0, Qt::UserRole).toString() == imageSet->id()) {
+			for(int index = 0; index < item->childCount(); ++index) {
+				QTreeWidgetItem *item2 = item->child(index);
+				if(item2->data(0, Qt::UserRole).value<ProjectImage *>() == image.get())
+					return item2;
+			}
+		}
+	}
+	return nullptr;
 }
 
 //---------------------------------------------------------------------
@@ -229,16 +324,18 @@ void ProjectExplorer::projectTreeSelectionChanged() {
 	if(project && ui->treeWidget->selectedItems().count() > 0) {
 		QTreeWidgetItem *selected = ui->treeWidget->selectedItems().at(0);
 		if(::isAncestorOf(selected, camerasItem)) {
-			int index = camerasItem->indexOfChild(selected);
-			emit cameraSelected(index, project->camera(selected->data(0, Qt::UserRole).toString()));
-		} else if(::isAncestorOf(selected, imageSetsItem)) {
-			int index = imageSetsItem->indexOfChild(selected);
-			if(index < 0) {
-				selected = selected->parent();
-				index = imageSetsItem->indexOfChild(selected);
-			}
+			emit cameraSelected(project->camera(selected->data(0, Qt::UserRole).toString()));
+		} else if(::isAncestorOf(selected->parent(), imageSetsItem)) {
+			//
+			QTreeWidgetItem *parent = selected->parent();
+			ImageSetPtr imageSet = project->imageSet(parent->data(0, Qt::UserRole).toString());
+			emit imageSetSelected(imageSet);
 
-			emit imageSetSelected(index, project->imageSet(selected->data(0, Qt::UserRole).toString()));
+			// XXX Could be dangerous if view and model indices don't line up
+			int index = parent->indexOfChild(selected);
+			emit imageSelected(imageSet->images()[index]);
+		} else if(::isAncestorOf(selected, imageSetsItem)) {
+			emit imageSetSelected(project->imageSet(selected->data(0, Qt::UserRole).toString()));
 		}
 	}
 }

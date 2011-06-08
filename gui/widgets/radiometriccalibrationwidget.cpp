@@ -165,12 +165,12 @@ void RadiometricCalibrationWidget::setProject(ProjectPtr project) {
 	ui->doCalibration->setEnabled(project.get() != 0);
 }
 
-void RadiometricCalibrationWidget::setCamera(int, CameraPtr camera) {
+void RadiometricCalibrationWidget::setCamera(CameraPtr camera) {
 	this->camera = camera;
 	updateResponseCurve();
 }
 
-void RadiometricCalibrationWidget::setImageSet(int, ImageSetPtr imageSet) {
+void RadiometricCalibrationWidget::setImageSet(ImageSetPtr imageSet) {
 	this->imageSet = imageSet;
 }
 

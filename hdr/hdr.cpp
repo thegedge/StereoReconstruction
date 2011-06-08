@@ -51,7 +51,7 @@ MultiExposureToHDR::MultiExposureToHDR(CameraPtr camera, ImageSetPtr imageSet)
 	if(camera && camera->response().size() >= 256) {
 		foreach(ProjectImagePtr image, imageSet->images()) {
 			if(image->camera()->id() == camera->id() && image->exposure() > 0) {
-				QImage imgData(image->file().path());
+				QImage imgData(image->file());
 				if(!imgData.isNull())
 					images << ImageDataPair(image, imgData);
 			}

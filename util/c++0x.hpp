@@ -57,7 +57,8 @@
 
 #define FORWARD_DECLARE(cls) \
 	class cls; \
-	typedef std::shared_ptr<cls> cls##Ptr
+	typedef std::shared_ptr<cls> cls##Ptr; \
+	typedef std::weak_ptr<cls> cls##WeakPtr
 
 
 #endif // CPP0X_HPP

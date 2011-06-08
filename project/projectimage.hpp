@@ -21,7 +21,9 @@
 #ifndef PROJECTIMAGE_H
 #define PROJECTIMAGE_H
 
+#include <QObject>
 #include <QFileInfo>
+#include <cmath>
 #include "util/c++0x.hpp"
 
 //
@@ -30,46 +32,62 @@
 FORWARD_DECLARE(Camera);
 FORWARD_DECLARE(ImageSet);
 
-//!
-class ProjectImage {
-public:
-	ProjectImage(QString filePath);
+//! An image in the project
+class ProjectImage : public QObject {
+	Q_OBJECT
 
 public:
-	void setFile(QString path) { file_.setFile(path); }
-	const QFileInfo & file() const { return file_; }
+	ProjectImage(QString filePath) : file_(filePath), exposure_(-1) { }
 
-	void setMask(QString path) { mask_.setFile(path); }
-	const QFileInfo & mask() const { return mask_; }
+public:
+	const QString & file() const { return file_; }
 
-	void setExposure(double exposure) { exposure_ = exposure; }
+	void setFile(QString file) {
+		if(file_ != file) {
+			file_ = file;
+			emit fileChanged(file_);
+		}
+	}
+
 	double exposure() const { return exposure_; }
 
-	void setCamera(CameraPtr cam) { camera_ = cam; }
+	void setExposure(double exposure) {
+		if(fabs(exposure_ - exposure) > 1e-10) {
+			exposure_ = exposure;
+			emit exposureChanged(exposure_);
+		}
+	}
+
 	CameraPtr camera() const { return camera_; }
 
-	void setImageSet(ImageSetPtr imageSet) { imageSet_ = imageSet; }
+	void setCamera(CameraPtr cam) {
+		if(camera_ != cam) {
+			CameraPtr old = camera_;
+			camera_ = cam;
+			emit cameraChanged(old, cam);
+		}
+	}
+
 	ImageSetPtr imageSet() const { return imageSet_.lock(); }
 
-	double & exposure() { return exposure_; }
-	CameraPtr & camera() { return camera_; }
+	void setImageSet(ImageSetPtr imageSet) {
+		if(imageSet_.lock() != imageSet) {
+			imageSet_ = imageSet;
+			emit imageSetChanged(imageSet);
+		}
+	}
 
-public:
-	QString fileString() const { return file_.absoluteFilePath(); }
-	QString maskString() const { return mask_.absoluteFilePath(); }
-
-public:
-	//! Returns \c true if this image has a mask, \c false otherwise
-	bool hasMask() const { return mask_.exists(); }
+signals:
+	void fileChanged(QString file);
+	void exposureChanged(double exposure);
+	void cameraChanged(CameraPtr oldCam, CameraPtr newCam);
+	void imageSetChanged(ImageSetPtr imageSet);
 
 private:
-	friend class Project;
-
-	QFileInfo file_;
-	QFileInfo mask_;
+	QString file_;
 	double exposure_;
 	CameraPtr camera_;
-	std::weak_ptr<ImageSet> imageSet_;
+	ImageSetWeakPtr imageSet_;
 };
 
 //---------------------------------------------------------------------

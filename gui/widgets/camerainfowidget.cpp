@@ -69,7 +69,7 @@ void CameraInfoWidget::setProject(ProjectPtr project) {
 	ui->radiometricCalibrationPage->setProject(project);
 }
 
-void CameraInfoWidget::setCamera(int index, CameraPtr camera) {
+void CameraInfoWidget::setCamera(CameraPtr camera) {
 	currentCamera = camera;
 	if(camera) {
 		ui->k1->setText(QString::number(camera->lensDistortion()[0], 'f'));
@@ -102,7 +102,7 @@ void CameraInfoWidget::setCamera(int index, CameraPtr camera) {
 		ui->copY->setText(QString::number(camera->C().y(), 'f'));
 		ui->copZ->setText(QString::number(camera->C().z(), 'f'));
 	}
-	ui->radiometricCalibrationPage->setCamera(index, camera);
+	ui->radiometricCalibrationPage->setCamera(camera);
 }
 
 //---------------------------------------------------------------------

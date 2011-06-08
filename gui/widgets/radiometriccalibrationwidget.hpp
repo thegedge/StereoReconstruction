@@ -54,8 +54,8 @@ protected:
 public slots:
 	void calibrate();
 
-	void setCamera(int, CameraPtr camera);
-	void setImageSet(int, ImageSetPtr imageSet);
+	void setCamera(CameraPtr camera);
+	void setImageSet(ImageSetPtr imageSet);
 	void setProject(ProjectPtr project);
 
 private slots:

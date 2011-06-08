@@ -220,28 +220,21 @@ void MultiViewStereo::initialize(ProjectPtr project,
 	for(size_t index = 0; index < views.size(); ++index) if(views[index]) {
 		ProjectImagePtr projectImage = imageSet->defaultImageForCamera(views[index]);
 
-		if(projectImage && projectImage->file().exists()) {
-			QImage image(projectImage->file().absoluteFilePath());
-			image = image.scaledToWidth(image.width() * imageScale, Qt::SmoothTransformation);
+		if(projectImage && QFileInfo(projectImage->file()).exists()) {
+			QImage baseImage(projectImage->file());
+			QImage image = baseImage.scaledToWidth(baseImage.width() * imageScale, Qt::SmoothTransformation);
 			images.push_back( VectorImage::fromQImage(image) );
 
 			// TODO if no mask, check alpha channel of original image
-			if(projectImage->mask().exists()) {
-				QImage mask(projectImage->mask().absoluteFilePath());
-				mask = mask.scaledToWidth(image.width(), Qt::FastTransformation);
-
-				// If mask has alpha channel, use it for masking
-				if(mask.hasAlphaChannel()) {
-					masks.push_back( VectorImage(mask.width(), mask.height(), WHITE) );
-					for(int y = 0; y < mask.height(); ++y) {
-						for(int x = 0; x < mask.width(); ++x) {
-							// If not fully opaque, we ignore that pixel
-							if(qAlpha(mask.pixel(x, y)) != 255)
-								masks.back().setPixel(x, y, BLACK);
-						}
+			if(baseImage.hasAlphaChannel()) {
+				QImage mask = baseImage.scaledToWidth(image.width(), Qt::FastTransformation);
+				masks.push_back( VectorImage(mask.width(), mask.height(), WHITE) );
+				for(int y = 0; y < mask.height(); ++y) {
+					for(int x = 0; x < mask.width(); ++x) {
+						// If not fully opaque, we ignore that pixel
+						if(qAlpha(mask.pixel(x, y)) != 255)
+							masks.back().setPixel(x, y, BLACK);
 					}
-				} else {
-					masks.push_back( VectorImage::fromQImage(mask) );
 				}
 			} else {
 				masks.push_back( VectorImage(image.width(), image.height(), WHITE) );

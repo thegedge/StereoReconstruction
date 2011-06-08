@@ -265,6 +265,7 @@ void TwoViewStereo::computeCostVolumes(CameraPtr leftView, CameraPtr rightView) 
 
 		const Ray3d::Point cameraC = leftView->C();
 
+		// TODO use tbb if enabled
 		#pragma omp parallel for
 		for(int y = 0; y < left.height(); ++y) {
 			if(isCancelled()) continue;
@@ -435,6 +436,7 @@ void TwoViewStereo::computeCostVolumes(CameraPtr leftView, CameraPtr rightView) 
 
 		const Ray3d::Point &cameraC = rightView->C();
 
+		// TODO use tbb if enabled
 		#pragma omp parallel for
 		for(int y = 0; y < right.height(); ++y) {
 			if(isCancelled()) continue;

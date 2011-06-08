@@ -124,18 +124,18 @@ Features CheckerboardDetector::features(ProjectImagePtr img) {
 
 	Features features;
 	try {
-		cv::Mat imageMat = cv::imread(img->file().absoluteFilePath().toStdString(), 0);
+		cv::Mat imageMat = cv::imread(img->file().toStdString(), 0);
 		std::vector<cv::Point2f> corners;
 
 		if(cv::findChessboardCorners(imageMat, board_size, corners, flags1)
 		   || cv::findChessboardCorners(imageMat, board_size, corners, flags2))
 		{
 			QString imageSetID = img->imageSet()->id();
-//			for(int index = 0; index < board_size.area(); ++index) {
-//				const cv::Point2f &pt = corners[index];
-//				features.push_back(
-//						std::make_shared<CheckerboardFeature>(pt.x, pt.y, index, imageSetID) );
-//			}
+			for(int index = 0; index < board_size.area(); ++index) {
+				const cv::Point2f &pt = corners[index];
+				features.push_back(
+						std::make_shared<CheckerboardFeature>(pt.x, pt.y, index, imageSetID) );
+			}
 		}
 	} catch(const cv::Exception &e) {
 		// XXX Do something?

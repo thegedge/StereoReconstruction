@@ -18,48 +18,31 @@
 // with StereoReconstruction. If not, see <http:www.gnu.org/licenses/>.
 //
 //---------------------------------------------------------------------
-#ifndef IMAGESETTABLE_HPP
-#define IMAGESETTABLE_HPP
+#ifndef CAMERASELECTORITEMDELEGATE_HPP
+#define CAMERASELECTORITEMDELEGATE_HPP
 
-#include <QTableWidget>
-#include <QImage>
+#include <QStringList>
+#include <QStyledItemDelegate>
 
+#include <vector>
 #include "util/c++0x.hpp"
 
-//
-// Forward declarations
-//
-class LoadImagesThread;
-class CameraSelectorItemDelegate;
-
 FORWARD_DECLARE(Project);
-FORWARD_DECLARE(ImageSet);
 
-//! A widget to show a set of images in a Project
-class ImageSetTable : public QTableWidget {
-    Q_OBJECT
+//! An item delegate that uses a combo box for editing.
+class CameraSelectorItemDelegate : public QStyledItemDelegate {
+public:
+	CameraSelectorItemDelegate(ProjectPtr project = ProjectPtr(), QObject *parent = 0);
+
+    QWidget * createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    void setEditorData(QWidget *editor, const QModelIndex &index) const;
+    void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
 public:
-    ImageSetTable(QWidget *parent = 0);
-	~ImageSetTable();
-
-public slots:
 	void setProject(ProjectPtr project);
-	void setImageSet(ImageSetPtr imageSet);
-
-private slots:
-	void imageLoaded(int index, QImage image);
-	void cellChanged(int, int);
-
-protected:
-    void changeEvent(QEvent *e);
 
 private:
-	LoadImagesThread *loadImages;
-	CameraSelectorItemDelegate *delegate;
-
 	ProjectPtr project;
-	ImageSetPtr currentSet;
 };
 
-#endif // IMAGESETTABLE_HPP
+#endif // CAMERASELECTORITEMDELEGATE_HPP

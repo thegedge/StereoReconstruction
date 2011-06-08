@@ -202,12 +202,12 @@ MainWindow::MainWindow(QWidget *parent)
 	// TODO move these to the ui files
 	//
 	connect(projectExplorer,
-			SIGNAL(cameraSelected(int, CameraPtr)),
-			SLOT(cameraSelected(int, CameraPtr)) );
+			SIGNAL(cameraSelected(CameraPtr)),
+			SLOT(cameraSelected(CameraPtr)) );
 
 	connect(projectExplorer,
-			SIGNAL(imageSetSelected(int, ImageSetPtr)),
-			SLOT(imageSetSelected(int, ImageSetPtr)) );
+			SIGNAL(imageSetSelected(ImageSetPtr)),
+			SLOT(imageSetSelected(ImageSetPtr)) );
 
 	connect(projectExplorerDock,
 			SIGNAL(visibilityChanged(bool)),
@@ -226,16 +226,16 @@ MainWindow::MainWindow(QWidget *parent)
 							  SLOT(setProject(ProjectPtr)) );
 
 	cameraInfoWidget->connect(projectExplorer,
-							  SIGNAL(cameraSelected(int, CameraPtr)),
-							  SLOT(setCamera(int, CameraPtr)) );
+							  SIGNAL(cameraSelected(CameraPtr)),
+							  SLOT(setCamera(CameraPtr)) );
 
 	imageSetTable->connect(this,
 						   SIGNAL(projectLoaded(ProjectPtr)),
 						   SLOT(setProject(ProjectPtr)) );
 
 	imageSetTable->connect(projectExplorer,
-						   SIGNAL(imageSetSelected(int, ImageSetPtr)),
-						   SLOT(setImageSet(int, ImageSetPtr)) );
+						   SIGNAL(imageSetSelected(ImageSetPtr)),
+						   SLOT(setImageSet(ImageSetPtr)) );
 
 	ui->stereoWidget->connect(this,
 							  SIGNAL(projectLoaded(ProjectPtr)),
@@ -840,7 +840,7 @@ void MainWindow::on_actionShowHide_Task_List_triggered(bool vis) {
 
 void MainWindow::setProject(QString fname) {
 	try {
-		this->project.reset(new Project(fname));
+		project.reset(new Project(fname));
 
 		// Show windows and such
 		if(!projectExplorer->isVisible())
@@ -980,7 +980,7 @@ void MainWindow::on_actionSave_As_triggered() {
 
 //---------------------------------------------------------------------
 
-void MainWindow::cameraSelected(int, CameraPtr cam) {
+void MainWindow::cameraSelected(CameraPtr cam) {
 	sceneCameraLayout->setSelectedCamera(cam);
 	ui->sceneViewer->updateGL();
 
@@ -992,7 +992,7 @@ void MainWindow::cameraSelected(int, CameraPtr cam) {
 
 //---------------------------------------------------------------------
 
-void MainWindow::imageSetSelected(int, ImageSetPtr imageSet) {
+void MainWindow::imageSetSelected(ImageSetPtr imageSet) {
 	sceneCameraLayout->setSelectedCamera(CameraPtr());
 
 	if(imageSet) {
@@ -1260,7 +1260,6 @@ void MainWindow::on_actionNew_Camera_triggered() {
 	} else {
 		CameraPtr cam = std::make_shared<Camera>(id, id);
 		project->addCamera(cam);
-		projectExplorer->setProject(project); // TODO use signals/slots
 		projectExplorer->editCamera(cam);
 	}
 }
@@ -1284,7 +1283,6 @@ void MainWindow::on_actionRemove_Camera_triggered() {
 		}
 
 		project->removeCamera(cam, ret == QMessageBox::Yes);
-		projectExplorer->setProject(project); // TODO use signals/slots
 	}
 }
 
@@ -1308,7 +1306,6 @@ void MainWindow::on_actionNew_Image_Set_triggered() {
 	} else {
 		ImageSetPtr imageSet = std::make_shared<ImageSet>(id, id);
 		project->addImageSet(imageSet);
-		projectExplorer->setProject(project); // TODO use signals/slots
 		projectExplorer->editImageSet(imageSet);
 	}
 }
@@ -1371,7 +1368,6 @@ void MainWindow::on_actionNew_Image_Set_From_Files_triggered() {
 
 		//
 		project->addImageSet(imageSet);
-		projectExplorer->setProject(project); // TODO use signals/slots
 		projectExplorer->editImageSet(imageSet);
 	}
 }
@@ -1379,10 +1375,8 @@ void MainWindow::on_actionNew_Image_Set_From_Files_triggered() {
 //---------------------------------------------------------------------
 
 void MainWindow::on_actionRemove_Image_Set_triggered() {
-	if(ImageSetPtr imageSet = projectExplorer->selectedImageSet()) {
+	if(ImageSetPtr imageSet = projectExplorer->selectedImageSet())
 		project->removeImageSet(imageSet);
-		projectExplorer->setProject(project); // TODO use signals/slots
-	}
 }
 
 //---------------------------------------------------------------------
@@ -1419,9 +1413,13 @@ void MainWindow::on_actionNew_Image_triggered() {
 	if(!path.isNull()) {
 		userSettings.setValue("InitialNewImageDir", path);
 
+		CameraPtr cam;
+		if(!project->cameras().isEmpty())
+			cam = project->cameras().begin().value();
+
 		ProjectImagePtr image = std::make_shared<ProjectImage>(path);
-		imageSet->addImageForCamera(project->cameras().begin().value(), image);
-		projectExplorer->setProject(project); // TODO use signals/slots
+		imageSet->addImageForCamera(cam, image);
+		projectExplorer->editImage(image);
 	}
 }
 
@@ -1429,10 +1427,8 @@ void MainWindow::on_actionNew_Image_triggered() {
 
 void MainWindow::on_actionRemove_Image_triggered() {
 	if(ImageSetPtr imageSet = projectExplorer->selectedImageSet()) {
-		if(ProjectImagePtr image = projectExplorer->selectedImage()) {
+		if(ProjectImagePtr image = projectExplorer->selectedImage())
 			imageSet->removeImage(image);
-			projectExplorer->setProject(project); // TODO use signals/slots
-		}
 	}
 }
 

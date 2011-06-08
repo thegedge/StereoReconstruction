@@ -308,11 +308,11 @@ void StereoWidget::on_imageSetsList_currentItemChanged(
 	if(leftView && rightView && imageSet) {
 		leftImage = imageSet->defaultImageForCamera(leftView);
 		if(leftImage)
-			qleft = QImage(leftImage->file().absoluteFilePath());
+			qleft = QImage(leftImage->file());
 
 		rightImage = imageSet->defaultImageForCamera(rightView);
 		if(rightImage)
-			qright = QImage(rightImage->file().absoluteFilePath());
+			qright = QImage(rightImage->file());
 	}
 
 	//
@@ -472,10 +472,10 @@ void StereoWidget::updateParameters() {
 
 	ui->lparamPixelXSpinner->setValue(pl.x());
 	ui->lparamPixelYSpinner->setValue(pl.y());
-	ui->lparamDistanceSpinner->setValue(leftView->plane().x0().norm());
+	ui->lparamDistanceSpinner->setValue(leftView->plane().distance());
 	ui->rparamPixelXSpinner->setValue(pr.x());
 	ui->rparamPixelYSpinner->setValue(pr.y());
-	ui->rparamDistanceSpinner->setValue(rightView->plane().x0().norm());
+	ui->rparamDistanceSpinner->setValue(rightView->plane().distance());
 	ui->leftViewRefractive->setChecked(leftView->isRefractive());
 	ui->rightViewRefractive->setChecked(rightView->isRefractive());
 
@@ -535,14 +535,6 @@ void StereoWidget::parameterChanged(int) {
 }
 
 void StereoWidget::parameterChanged(double) {
-	if(sender() == ui->refractiveIndexSpinner) {
-		if(ui->lScaleFocalLength->isChecked())
-			leftView->setFocalLengthScale(ui->refractiveIndexSpinner->value());
-
-		if(ui->rScaleFocalLength->isChecked())
-			rightView->setFocalLengthScale(ui->refractiveIndexSpinner->value());
-	}
-
 	parameterChanged();
 }
 
@@ -587,7 +579,7 @@ void StereoWidget::on_calibrateButton_clicked() {
 
 			model[3*view_index + 1] = pixel.x();
 			model[3*view_index + 2] = pixel.y();
-			model[3*view_index + 3] = cam->plane().x0().norm();
+			model[3*view_index + 3] = cam->plane().distance();
 		} else {
 			fixed[3*view_index + 1] = true;
 			fixed[3*view_index + 2] = true;
@@ -639,7 +631,7 @@ QGraphicsItem * StereoWidget::epipolarLineItem(CameraPtr left, CameraPtr right, 
 
 		Ray3d::Point p2 = planeRay.point(depth);
 
-		if(intersect(ray, Plane3d(planeRay.direction(), p2), p2)) {
+		if(intersect(ray, Plane3d(planeRay.direction(), depth), p2)) {
 			//Ray3d::Point p2 = ray.point(depth);
 			if(right->project(p2)) {
 				if(std::isnan(p1[0])) p1 = p2;
@@ -1004,22 +996,6 @@ void StereoWidget::on_computeDepthMapsButton_clicked() {
 				SLOT(stereoCompleted(const Task *)));
 
 		qApp->notify(QApplication::activeWindow(), new NewTaskEvent(mvs));
-	}
-}
-
-//---------------------------------------------------------------------
-
-void StereoWidget::on_lScaleFocalLength_toggled(bool checked) {
-	if(leftView) {
-		leftView->setFocalLengthScale(checked ? ui->refractiveIndexSpinner->value() : 1.0);
-		updateView();
-	}
-}
-
-void StereoWidget::on_rScaleFocalLength_toggled(bool checked) {
-	if(rightView) {
-		rightView->setFocalLengthScale(checked ? ui->refractiveIndexSpinner->value() : 1.0);
-		updateView();
 	}
 }
 

@@ -124,8 +124,6 @@ private slots:
 	void on_imageSetsList_customContextMenuRequested(QPoint pos);
 	void on_imageSetsList_currentItemChanged(QListWidgetItem*, QListWidgetItem*);
 	void on_computeDepthMapsButton_clicked();
-	void on_lScaleFocalLength_toggled(bool checked);
-	void on_rScaleFocalLength_toggled(bool checked);
 
 	void on_toolExport_clicked();
 

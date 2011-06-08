@@ -91,7 +91,7 @@ FeaturePtr SurfDetector::load(const QDomElement &element) {
 //---------------------------------------------------------------------
 
 Features SurfDetector::features(ProjectImagePtr img) {
-	cv::Mat image = cv::imread(img->file().absoluteFilePath().toStdString());
+	cv::Mat image = cv::imread(img->file().toStdString());
 	cv::Mat image_gray(image .rows, image .cols, CV_8UC1);
 	cv::cvtColor(image, image_gray, CV_RGB2GRAY);
 

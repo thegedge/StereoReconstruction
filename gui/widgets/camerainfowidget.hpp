@@ -42,7 +42,7 @@ public:
 
 public slots:
 	void setProject(ProjectPtr project);
-	void setCamera(int index, CameraPtr camera);
+	void setCamera(CameraPtr camera);
 	void updateCamera();
 
 protected:

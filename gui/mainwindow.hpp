@@ -146,8 +146,8 @@ private slots:
 	void captureCalibrationImages_Finished();
 #endif
 	// Project explorer events
-	void cameraSelected(int index, CameraPtr cam);
-	void imageSetSelected(int index, ImageSetPtr imageSet);
+	void cameraSelected(CameraPtr cam);
+	void imageSetSelected(ImageSetPtr imageSet);
 
 	// Help menu
 	void on_actionAbout_StereoReconstruction_triggered();

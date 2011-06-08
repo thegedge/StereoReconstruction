@@ -709,7 +709,7 @@ void CameraCalibration::calibrate() {
 			ProjectImagePtr image = imageSets[img_index]->defaultImageForCamera(cam);
 			if(image) {
 				if(image_sizes[cam_index].width < 0) {
-					cv::Mat img = cv::imread(image->file().absoluteFilePath().toStdString());
+					cv::Mat img = cv::imread(image->file().toStdString());
 					image_sizes[cam_index] = cv::Size(img.cols, img.rows);
 				}
 

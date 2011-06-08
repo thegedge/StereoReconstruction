@@ -21,9 +21,10 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-#include <QString>
 #include <QDir>
 #include <QMap>
+#include <QObject>
+#include <QString>
 
 #include <boost/noncopyable.hpp>
 
@@ -44,7 +45,9 @@ typedef QMap<QString, ImageSetPtr> ImageSetMap;
 /*!
  * A project for StereoReconstruction.
  */
-class Project : boost::noncopyable {
+class Project : public QObject, public boost::noncopyable {
+	Q_OBJECT
+
 public:
 	Project(QString projectPath = QString());
 
@@ -57,10 +60,10 @@ public:
 
 public: // Cameras
 	//! Get a camera from its id
-	CameraPtr camera(QString id) { return cameras_[id]; }
+	CameraPtr camera(QString id) { return cameras_.value(id, CameraPtr()); }
 
 	//! \copydoc camera(QString)
-	const CameraPtr camera(QString id) const { return cameras_[id]; }
+	const CameraPtr camera(QString id) const { return cameras_.value(id, CameraPtr()); }
 
 	//! Get a reference to the camera map
 	const CameraMap& cameras() const { return cameras_; }
@@ -82,8 +85,11 @@ public: // Image sets
 	//! Get a reference to the image sets map
 	const ImageSetMap& imageSets() const { return imageSets_; }
 
+	//! Get an image set from its id
+	ImageSetPtr imageSet(QString id) { return imageSets_.value(id, ImageSetPtr()); }
+
 	//! \copydoc imageSet(QString)
-	const ImageSetPtr imageSet(QString id) const { return imageSets_[id]; }
+	const ImageSetPtr imageSet(QString id) const { return imageSets_.value(id, ImageSetPtr()); }
 
 	//! Add an image set to the project
 	void addImageSet(ImageSetPtr imageSet);
@@ -91,17 +97,19 @@ public: // Image sets
 	//! Remove an image set from the project
 	void removeImageSet(ImageSetPtr imageSet);
 
-	//! Get an image set from its id
-	ImageSetPtr imageSet(QString id) { return imageSets_[id]; }
-
 public:
-	//! \todo remove the non-const version of the below
+	//! \todo find a way to remove the non-const version of the below
 	FeatureDatabase& features() { return featuresDB_; }
 	const FeatureDatabase& features() const { return featuresDB_; }
 
-public:
 	//! Get an XML-ized version of the project
 	QDomDocument *toXML();
+
+signals:
+	void cameraAdded(CameraPtr camera);
+	void cameraRemoved(CameraPtr camera);
+	void imageSetAdded(ImageSetPtr imageSet);
+	void imageSetRemoved(ImageSetPtr imageSet);
 
 private:
 	QDir projectPath_;             //!< Path to the project

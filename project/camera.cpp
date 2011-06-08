@@ -34,6 +34,7 @@
 
 #include <Eigen/LU>
 #include <Eigen/QR>
+#include <Eigen/Array>
 
 #include "util/linalg.hpp"
 
@@ -109,7 +110,7 @@ bool projectRefraction(Vector3d &p, const Plane3d &P, double n) {
 	const double y = (p - proj).y();
 	const double z = proj.norm();
 	const double r = (p - proj).norm();
-	const double d = P.x0().norm();
+	const double d = P.distance();
 	const double rr = r*r, nn = n*n, dd = d*d;
 
 	// Note that the below modifies p
@@ -188,7 +189,6 @@ Camera::Camera(QString id, QString name)
 	, Rinv_(Matrix3d::Identity())
 	, Kinv_(Matrix3d::Identity())
 	, refractiveIndex_(1.0)
-    , focalLengthScale_(1.0)
 	, isRefractive_(false)
 	, isDistorted_(false)
 {
@@ -202,6 +202,8 @@ Camera::Camera(QString id, QString name)
 void Camera::setP(const ProjMat &P) {
 	P_ = P;
 	updateOthers();
+	emit intrinsicParametersChanged(K_);
+	emit extrinsicParametersChanged(R_, C_);
 }
 
 void Camera::setR(const Eigen::Matrix3d &R) {
@@ -209,24 +211,28 @@ void Camera::setR(const Eigen::Matrix3d &R) {
 	orthonormalize(R_);
 	Rinv_ = R_.transpose();
 	updateProjection();
+	emit extrinsicParametersChanged(R_, C_);
 }
 
 void Camera::sett(const Eigen::Vector3d &t) {
 	t_ = t;
 	C_ = Rinv_ * -t;
 	updateProjection();
+	emit extrinsicParametersChanged(R_, C_);
 }
 
 void Camera::setC(const Eigen::Vector3d &C) {
 	C_ = C;
 	t_ = R_ * -C;
 	updateProjection();
+	emit extrinsicParametersChanged(R_, C_);
 }
 
 void Camera::setK(const Eigen::Matrix3d &K) {
 	K_ = K;
 	Kinv_ = K_.inverse();
 	updateProjection();
+	emit intrinsicParametersChanged(K_);
 }
 
 void Camera::set(const Eigen::Matrix3d &K, const Eigen::Matrix3d &R, const Eigen::Vector3d &t) {
@@ -241,6 +247,9 @@ void Camera::set(const Eigen::Matrix3d &K, const Eigen::Matrix3d &R, const Eigen
 	C_ = Rinv_ * -t;
 
 	updateProjection();
+
+	emit intrinsicParametersChanged(K_);
+	emit extrinsicParametersChanged(R_, C_);
 }
 
 //---------------------------------------------------------------------
@@ -274,7 +283,6 @@ void Camera::updateOthers() {
 	R_ = reverseRows * matrixQ.transpose();
 	K_ = reverseRows * matrixR.transpose() * reverseRows;
 
-#if 1
 	// Eigen doesn't require diagonal elements of R (in the QR
 	// decomposition) to be positive, so correct for this since the
 	// intrinsic matrix should have positive diagonal elements
@@ -287,20 +295,13 @@ void Camera::updateOthers() {
 		if(K_(axis, 2) < 0)
 			K_(axis, 2) = -K_(axis, 2);
 	}
-#endif
+
 	orthonormalize(R_);
 
 	Kinv_ = K_.inverse();
 	Rinv_ = R_.transpose();
 	t_ = Kinv_ * P_.col(3);
 	C_ = -Rinv_ * t_;
-
-	if(fabs(t_[0]) < 1e-5) t_[0] = 0.0;
-	if(fabs(t_[1]) < 1e-5) t_[1] = 0.0;
-	if(fabs(t_[2]) < 1e-5) t_[2] = 0.0;
-	if(fabs(C_[0]) < 1e-5) C_[0] = 0.0;
-	if(fabs(C_[1]) < 1e-5) C_[1] = 0.0;
-	if(fabs(C_[2]) < 1e-5) C_[2] = 0.0;
 
 	updatePrincipleRay();
 }
@@ -318,47 +319,45 @@ void Camera::updatePrincipleRay() {
 //---------------------------------------------------------------------
 
 void Camera::setLensDistortion(const LensDistortions &distortion) {
-	this->lensDistortion_ = distortion;
-	this->isDistorted_ = !iszero(distortion[0])
-						 || !iszero(distortion[1])
-						 || !iszero(distortion[2])
-						 || !iszero(distortion[3])
-						 || !iszero(distortion[4]);
+	if(distortion != lensDistortion_) {
+		lensDistortion_ = distortion;
+		isDistorted_ = !iszero(distortion[0])
+		               || !iszero(distortion[1])
+		               || !iszero(distortion[2])
+		               || !iszero(distortion[3])
+		               || !iszero(distortion[4]);
+
+		emit lensDistortionChanged(distortion);
+	}
 }
 
 //---------------------------------------------------------------------
 
 void Camera::setResponse(const Responses &response) {
-	this->response_ = response;
+	if(response_ != response) {
+		response_ = response;
+		emit responseChanged(response_);
+	}
 }
 
 //---------------------------------------------------------------------
 
 void Camera::setPlane(const Plane3d &plane) {
-	this->plane_ = plane;
-	this->isRefractive_ = (!iszero(refractiveIndex_ - 1) && !iszero(plane_.x0().norm()));
+	if(plane_ != plane) {
+		this->plane_ = plane;
+		this->isRefractive_ = (!iszero(refractiveIndex_ - 1) && !iszero(plane_.distance()));
+		emit refractiveParametersChanged(plane_, refractiveIndex_);
+	}
 }
 
 //---------------------------------------------------------------------
 
 void Camera::setRefractiveIndex(double n) {
-	this->refractiveIndex_ = n;
-	this->isRefractive_ = (!iszero(refractiveIndex_ - 1) && !iszero(plane().x0().norm()));
-}
-
-//---------------------------------------------------------------------
-
-void Camera::setFocalLengthScale(double v) {
-	K_(0, 0) /= focalLengthScale_;
-	K_(1, 1) /= focalLengthScale_;
-
-	this->focalLengthScale_ = v;
-
-	K_(0, 0) *= focalLengthScale_;
-	K_(1, 1) *= focalLengthScale_;
-
-	Kinv_ = K_.inverse();
-	updateProjection();
+	if(fabs(n - refractiveIndex_) > 1e-10) {
+		refractiveIndex_ = n;
+		isRefractive_ = (!iszero(refractiveIndex_ - 1) && !iszero(plane().distance()));
+		emit refractiveParametersChanged(plane_, refractiveIndex_);
+	}
 }
 
 //---------------------------------------------------------------------
@@ -373,14 +372,12 @@ Eigen::Vector3d Camera::fromLocalToGlobal(const Eigen::Vector3d &p) const {
 
 Plane3d Camera::fromGlobalToLocal(const Plane3d &p) const {
 	Plane3d::Vector norm = R_*p.normal();
-	Plane3d::Point x0 = fromGlobalToLocal(p.x0());
-	return Plane3d(norm, x0);
+	return Plane3d(norm, p.distance());
 }
 
 Plane3d Camera::fromLocalToGlobal(const Plane3d &p) const {
 	Plane3d::Vector norm = Rinv_*p.normal();
-	Plane3d::Point x0 = fromLocalToGlobal(p.x0());
-	return Plane3d(norm, x0);
+	return Plane3d(norm, p.distance());
 }
 
 Ray3d Camera::fromGlobalToLocal(const Ray3d &r) const {

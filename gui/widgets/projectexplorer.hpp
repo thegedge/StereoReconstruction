@@ -51,19 +51,31 @@ public:
 
 	void editCamera(CameraPtr cam);
 	void editImageSet(ImageSetPtr imageSet);
+	void editImage(ProjectImagePtr image);
 
 signals:
-	void cameraSelected(int index, CameraPtr cam);
-	void imageSetSelected(int index, ImageSetPtr imageSet);
+	void cameraSelected(CameraPtr cam);
+	void imageSetSelected(ImageSetPtr imageSet);
+	void imageSelected(ProjectImagePtr imageSet);
 
 public slots:
 	void setProject(ProjectPtr project);
+	void addCamera(CameraPtr cam);
+	void removeCamera(CameraPtr cam);
+	void addImageSet(ImageSetPtr imageSet);
+	void removeImageSet(ImageSetPtr imageSet);
+	void addImage(ProjectImagePtr image);
+	void removeImage(ProjectImagePtr image);
 
 private slots:
 	void forwardPopupMenu(const QPoint &);
 	void projectTreeSelectionChanged();
-
 	void on_treeWidget_itemChanged(QTreeWidgetItem *item, int column);
+
+private:
+	QTreeWidgetItem * itemForCamera(CameraPtr cam);
+	QTreeWidgetItem * itemForImageSet(ImageSetPtr imageSet);
+	QTreeWidgetItem * itemForImage(ProjectImagePtr image);
 
 private:
 	Ui::ProjectExplorer *ui;

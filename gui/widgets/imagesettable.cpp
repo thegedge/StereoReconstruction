@@ -20,7 +20,7 @@
 //---------------------------------------------------------------------
 #include "imagesettable.hpp"
 
-#include "gui/comboboxitemdelegate.hpp"
+#include "gui/cameraselectoritemdelegate.hpp"
 #include "gui/loadimagesthread.hpp"
 #include "project/project.hpp"
 #include "project/camera.hpp"
@@ -36,7 +36,6 @@
 #include <QLabel>
 #include <QList>
 #include <QStringList>
-#include <QStyledItemDelegate>
 #include <QThread>
 
 //---------------------------------------------------------------------
@@ -52,6 +51,7 @@ namespace {
 ImageSetTable::ImageSetTable(QWidget *parent)
     : QTableWidget(0, 4, parent)
 	, loadImages(nullptr)
+    , delegate(new CameraSelectorItemDelegate)
 {
 	setColumnWidth(THUMBNAIL_COLUMN, 110);
 	setColumnWidth(CAMERA_COLUMN, 75);
@@ -63,6 +63,7 @@ ImageSetTable::ImageSetTable(QWidget *parent)
 	setEditTriggers(AllEditTriggers);
 	setSelectionBehavior(SelectRows);
 	setCornerButtonEnabled(false);
+	setItemDelegateForColumn(CAMERA_COLUMN, delegate);
 
 	horizontalHeader()->setCascadingSectionResizes(true);
 	horizontalHeader()->setStretchLastSection(true);
@@ -87,21 +88,12 @@ ImageSetTable::~ImageSetTable() {
 
 void ImageSetTable::setProject(ProjectPtr project) {
 	this->project = project;
-
-	// TODO update these when cameras change in project
-	QStringList cameraNames, cameraIDs;
-	cameraNames << tr("<no camera>");
-	cameraIDs << "";
-
-	foreach(CameraPtr cam, project->cameras()) {
-		cameraNames << cam->name();
-		cameraIDs << cam->id();
-	}
-
-	setItemDelegateForColumn(CAMERA_COLUMN, new ComboBoxItemDelegate(cameraNames, cameraIDs));
+	delegate->setProject(project);
 }
 
-void ImageSetTable::setImageSet(int, ImageSetPtr imageSet) {
+//---------------------------------------------------------------------
+
+void ImageSetTable::setImageSet(ImageSetPtr imageSet) {
 	if(project && !imageSet) {
 		clearContents();
 	} else if(project && imageSet) {
@@ -111,7 +103,7 @@ void ImageSetTable::setImageSet(int, ImageSetPtr imageSet) {
 
 			// Update table
 			for(size_t index = 0; index < imageSet->images().size(); ++index) {
-				QString path = imageSet->root().relativeFilePath(imageSet->images()[index]->file().absoluteFilePath());
+				QString path = imageSet->root().relativeFilePath(imageSet->images()[index]->file());
 				QTableWidgetItem *fnameItem = new QTableWidgetItem(path);
 				fnameItem->setFlags(fnameItem->flags() & ~Qt::ItemIsEditable);
 				fnameItem->setTextAlignment(Qt::AlignCenter);
@@ -134,13 +126,13 @@ void ImageSetTable::setImageSet(int, ImageSetPtr imageSet) {
 			// Load images
 			QStringList images;
 			foreach(ProjectImagePtr image, imageSet->images())
-				images << image->file().absoluteFilePath();
+				images << image->file();
 
 			if(loadImages) {
 				loadImages->stop();
 				loadImages->wait();
 				loadImages->deleteLater();
-				loadImages = 0;
+				loadImages = nullptr;
 			}
 
 			if(imageSet->images().size() > 0) {
@@ -161,12 +153,13 @@ void ImageSetTable::cellChanged(int row, int column) {
 		bool ok = false;
 		switch(column) {
 		case CAMERA_COLUMN: {
-			QString name = item(row, column)->text().trimmed();
-			CameraPtr cam = project->cameraFromName(name);
+			QString id = item(row, column)->data(Qt::UserRole).toString();
+			CameraPtr cam = project->camera(id);
 			if(cam) {
 				foreach(const QModelIndex &index, selectedIndexes()) {
-					currentSet->images()[index.row()]->camera() = cam;
-					item(index.row(), column)->setText(name);
+					currentSet->images()[index.row()]->setCamera(cam);
+					item(index.row(), column)->setText(cam->name());
+					item(index.row(), column)->setData(Qt::UserRole, id);
 				}
 			}
 			break;
@@ -176,7 +169,7 @@ void ImageSetTable::cellChanged(int row, int column) {
 			double exposure = sExposure.toDouble(&ok);
 			if(ok) {
 				foreach(const QModelIndex &index, selectedIndexes()) {
-					currentSet->images()[index.row()]->exposure() = exposure;
+					currentSet->images()[index.row()]->setExposure(exposure);
 					item(index.row(), column)->setText(sExposure);
 				}
 			}

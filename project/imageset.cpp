@@ -33,7 +33,7 @@ ImageSet::ImageSet(QString id, QString name)
 //---------------------------------------------------------------------
 
 void ImageSet::removeImage(ProjectImagePtr image) {
-	if(image) {
+	if(image && std::find(images_.begin(), images_.end(), image) != images_.end()) {
 		// Remove
 		images_.erase(std::remove(images_.begin(), images_.end(), image), images_.end());
 
@@ -48,6 +48,8 @@ void ImageSet::removeImage(ProjectImagePtr image) {
 		// If no such images exist, remove it from defaults
 		if(count == 0)
 			defaults_.remove(cam);
+
+		emit imageRemoved(image);
 	}
 }
 
@@ -64,6 +66,8 @@ void ImageSet::addImageForCamera(CameraPtr cam, ProjectImagePtr image) {
 
 		if(cam && !defaults_.contains(cam))
 			defaults_[cam] = image;
+
+		emit imageAdded(image);
 	}
 }
 
@@ -81,9 +85,12 @@ void ImageSet::removeImagesForCamera(CameraPtr cam) {
 	if(defaults_.contains(cam))
 		defaults_.remove(cam);
 
-	images_.erase(std::remove_if(images_.begin(), images_.end(), [&cam](ProjectImagePtr image) {
-		return (image->camera() == cam);
-	}), images_.end());
+	for(int index = images_.size() - 1; index >= 0; --index) {
+		if(images_[index]->camera() == cam) {
+			emit imageRemoved(images_[index]);
+			images_.erase(images_.begin() + index);
+		}
+	}
 }
 
 //---------------------------------------------------------------------

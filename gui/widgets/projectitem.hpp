@@ -18,28 +18,33 @@
 // with StereoReconstruction. If not, see <http:www.gnu.org/licenses/>.
 //
 //---------------------------------------------------------------------
-#ifndef COMBOBOXITEMDELEGATE_HPP
-#define COMBOBOXITEMDELEGATE_HPP
+#ifndef PROJECTITEM_HPP
+#define PROJECTITEM_HPP
 
-#include <QStringList>
-#include <QStyledItemDelegate>
+#include <QObject>
+#include <QTreeWidgetItem>
+#include "util/c++0x.hpp"
 
-/*!
- * An item delegate that uses a combo box for editing.
- */
-class ComboBoxItemDelegate : public QStyledItemDelegate {
-    Q_OBJECT
+FORWARD_DECLARE(Camera);
+FORWARD_DECLARE(ImageSet);
+FORWARD_DECLARE(ProjectImage);
+
+//! .
+class ProjectItem : public QObject, public QTreeWidgetItem {
+	Q_OBJECT
 
 public:
-	ComboBoxItemDelegate(QStringList options, QStringList data, QObject *parent = 0);
+	ProjectItem(QObject *obj);
 
-    QWidget * createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
-    void setEditorData (QWidget *editor, const QModelIndex &index) const;
-    void setModelData (QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
+public slots:
+	void update();
+	void update(QString) { update(); }
+	void update(CameraPtr, CameraPtr);
 
 private:
-	QStringList options;
-	QStringList data;
+	QObject *obj;
 };
 
-#endif // COMBOBOXITEMDELEGATE_HPP
+//---------------------------------------------------------------------
+
+#endif // PROJECTITEM_HPP

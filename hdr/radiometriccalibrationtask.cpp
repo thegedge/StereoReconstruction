@@ -286,7 +286,7 @@ void RadiometricCalibrationTask::calibrate() {
 	// Load images
 	//
 	foreach(ProjectImagePtr image, imageSet->images()) {
-		QImage img(image->file().path());
+		QImage img(image->file());
 		if(!img.isNull())
 			images << img;
 	}
@@ -294,7 +294,7 @@ void RadiometricCalibrationTask::calibrate() {
 	//
 	// Collect indicies, sort from highest to lowest exposure
 	//
-	QMap<int, QList<int> > cameras;
+	QMap<QString, QList<int> > cameras;
 	{
 		typedef QPair<int, double> Pair;
 		QList<Pair> exposureRowPairs;
@@ -303,8 +303,8 @@ void RadiometricCalibrationTask::calibrate() {
 
 		qSort(exposureRowPairs);
 		foreach(const Pair &pair, exposureRowPairs) {
-			int cameraIndex = imageSet->images()[pair.first]->camera()->index();
-			cameras[cameraIndex] << pair.first;
+			QString cameraId = imageSet->images()[pair.first]->camera()->id();
+			cameras[cameraId] << pair.first;
 		}
 	}
 

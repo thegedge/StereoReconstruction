@@ -102,16 +102,13 @@ Project::Project(QString projectPath)
 	//
 	// Cameras
 	//
-	int cameraIndex = 0;
-
 	qDebug() << "Loading cameras...";
 
 	QDomNode camerasNode = doc.documentElement().firstChildElement("cameras");
 	QDomNode cameraNode = camerasNode.firstChildElement("camera");
 	while(!cameraNode.isNull()) {
 		CameraPtr cam(new Camera(getAttribute(cameraNode, "id")));
-		cam->index_ = cameraIndex++;
-		cam->name_ = getAttribute(cameraNode, "name", cam->id_);
+		cam->setName(getAttribute(cameraNode, "name", cam->id()));
 
 		// The projection matrix node is required, so no need to check for null
 		QDomNode projectionMatrixNode = cameraNode.firstChildElement("projectionMatrix");
@@ -147,6 +144,7 @@ Project::Project(QString projectPath)
 
 		//
 		QDomNode responseNode = cameraNode.firstChildElement("response");
+		Responses responses(256);
 		while(!responseNode.isNull()) {
 			QString channelName = getAttribute(responseNode, "channel", QString());
 			if(!channelName.isNull()) {
@@ -156,18 +154,14 @@ Project::Project(QString projectPath)
 				else if(channelName == "blue") channel = 2;
 
 				if(channel >= 0) {
-					if(cam->response_.size() != 256) {
-						std::vector<Response> temp(256);
-						cam->response_.swap(temp);
-					}
-
 					QDomNode valueNode = responseNode.firstChild();
 					for(int index = 0; index < 256; ++index, valueNode = valueNode.nextSibling())
-						cam->response_[index][channel] = valueNode.firstChild().toText().data().toDouble();
+						responses[index][channel] = valueNode.firstChild().toText().data().toDouble();
 				}
 			}
 			responseNode = responseNode.nextSiblingElement("response");
 		}
+		cam->setResponse(responses);
 
 		//
 		QDomNode refractiveNode = cameraNode.firstChildElement("refractiveInterface");
@@ -181,7 +175,7 @@ Project::Project(QString projectPath)
 		}
 
 		//
-		cameras_[cam->id_] = cam;
+		cameras_[cam->id()] = cam;
 		cameraNode = cameraNode.nextSiblingElement("camera");
 	}
 
@@ -194,47 +188,34 @@ Project::Project(QString projectPath)
 	QDomNode imageSetNode = imageSetsNode.firstChildElement("imageSet");
 	while(!imageSetNode.isNull()) {
 		ImageSetPtr imageSet(new ImageSet(getAttribute(imageSetNode, "id")));
-		imageSet->name_ = getAttribute(imageSetNode, "name", imageSet->id_);
-		imageSet->root_.setPath(projectPath);
-		imageSet->root_.cdUp();
+		imageSet->setName(getAttribute(imageSetNode, "name", imageSet->id()));
 
+		QDir root(projectPath);
+		root.cdUp();
 		if(hasAttribute(imageSetNode, "root")) {
-			QString root = getAttribute(imageSetNode, "root");
-			if(QDir::isRelativePath(root))
-				imageSet->root_.cd(root);
+			QString rootStr = getAttribute(imageSetNode, "root");
+			if(QDir::isRelativePath(rootStr))
+				root.cd(rootStr);
 			else
-				imageSet->root_.setPath(root);
+				root.setPath(rootStr);
 		}
+		imageSet->setRoot(root);
 
 		// Images
 		QDomNode imageNode = imageSetNode.firstChild();
 		while(!imageNode.isNull()) {
 			ProjectImagePtr image(new ProjectImage(imageSet->root().absoluteFilePath(getAttribute(imageNode, "file"))));
-			image->imageSet_ = imageSet;
-			image->exposure_ = getAttribute(imageNode, "exposure", "-1.0").toDouble();
+			image->setImageSet(imageSet);
+			image->setExposure(getAttribute(imageNode, "exposure", "-1.0").toDouble());
 
-			if(hasAttribute(imageNode, "mask"))
-				image->mask_ = QFileInfo( imageSet->root().absoluteFilePath(getAttribute(imageNode, "mask")) );
-
-			if(cameras_.contains(getAttribute(imageNode, "for"))) {
-				image->camera_ = cameras_[getAttribute(imageNode, "for")];
-
-				// If we don't already have a default image for the camera, or
-				// the file specifies this as the default...
-				if(!imageSet->defaults_.contains(image->camera_)
-					|| getAttribute(imageNode, "default", "no") == "yes")
-				{
-					imageSet->defaults_[image->camera_] = image;
-				}
-
-				imageSet->images_.push_back(image);
-			}
+			if(cameras_.contains(getAttribute(imageNode, "for")))
+				imageSet->addImageForCamera(cameras_[getAttribute(imageNode, "for")], image);
 
 			imageNode = imageNode.nextSibling();
 		}
 
 		//
-		if(imageSet->images_.size() > 0)
+		if(imageSet->images().size() > 0)
 			imageSets_[imageSet->id()] = imageSet;
 		imageSetNode = imageSetNode.nextSiblingElement("imageSet");
 	}
@@ -415,14 +396,14 @@ QDomDocument *Project::toXML() {
 			cameraNode.appendChild(blueResponseCurveNode);
 		}
 
-		if(fabs(cam->refractiveIndex() - 1) > 1e-10 && fabs(cam->plane().x0().norm()) > 1e-10) {
+		if(fabs(cam->refractiveIndex() - 1) > 1e-10 && fabs(cam->plane().distance()) > 1e-10) {
 			Vector3d p = cam->K() * cam->plane().normal();
 			p /= p[2];
 
 			QDomElement interfaceNode = doc->createElement("refractiveInterface");
 			interfaceNode.setAttribute("px", QString("%1").arg(p[0]));
 			interfaceNode.setAttribute("py", QString("%1").arg(p[1]));
-			interfaceNode.setAttribute("dist", QString("%1").arg(cam->plane().x0().norm()));
+			interfaceNode.setAttribute("dist", QString("%1").arg(cam->plane().distance()));
 			interfaceNode.setAttribute("refractiveRatio", QString("%1").arg(cam->refractiveIndex()));
 			cameraNode.appendChild(interfaceNode);
 		}
@@ -456,12 +437,9 @@ QDomDocument *Project::toXML() {
 		foreach(ProjectImagePtr image, imageSet->images()) {
 			QDomElement imageNode = doc->createElement("image");
 
-			imageNode.setAttribute("file", imageSet->root().relativeFilePath(image->file().absoluteFilePath()));
+			imageNode.setAttribute("file", imageSet->root().relativeFilePath(image->file()));
 			if(image->exposure() > 0)
 				imageNode.setAttribute("exposure", image->exposure());
-
-			if(image->hasMask())
-				imageNode.setAttribute("mask", imageSet->root().relativeFilePath(image->mask().absoluteFilePath()));
 
 			if(image->camera()) {
 				imageNode.setAttribute("for", image->camera()->id());
@@ -549,8 +527,10 @@ QDomDocument *Project::toXML() {
 //---------------------------------------------------------------------
 
 void Project::addCamera(CameraPtr cam) {
-	if(cam)
+	if(cam) {
 		cameras_[cam->id()] = cam;
+		emit cameraAdded(cam);
+	}
 }
 
 //---------------------------------------------------------------------
@@ -568,6 +548,7 @@ void Project::removeCamera(CameraPtr cam, bool removeImages) {
 				}
 			}
 		}
+		emit cameraRemoved(cam);
 	}
 }
 
@@ -583,15 +564,19 @@ CameraPtr Project::cameraFromName(QString name) {
 //---------------------------------------------------------------------
 
 void Project::addImageSet(ImageSetPtr imageSet) {
-	if(imageSet)
+	if(imageSet) {
 		imageSets_[imageSet->id()] = imageSet;
+		emit imageSetAdded(imageSet);
+	}
 }
 
 //---------------------------------------------------------------------
 
 void Project::removeImageSet(ImageSetPtr imageSet) {
-	if(imageSets_.contains(imageSet->id()))
+	if(imageSets_.contains(imageSet->id())) {
 		imageSets_.remove(imageSet->id());
+		emit imageSetRemoved(imageSet);
+	}
 }
 
 //---------------------------------------------------------------------

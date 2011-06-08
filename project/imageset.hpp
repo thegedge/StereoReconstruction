@@ -21,6 +21,7 @@
 #ifndef IMAGESET_H
 #define IMAGESET_H
 
+#include <QObject>
 #include <QString>
 #include <QDir>
 #include <QMap>
@@ -41,7 +42,9 @@ FORWARD_DECLARE(Camera);
 FORWARD_DECLARE(ProjectImage);
 
 //! A set of images
-class ImageSet : public std::enable_shared_from_this<ImageSet> {
+class ImageSet : public QObject, public std::enable_shared_from_this<ImageSet> {
+	Q_OBJECT
+
 public:
 	ImageSet(QString id, QString name = QString());
 
@@ -49,10 +52,29 @@ public:
 	QString id() const { return id_; }
 
 	QString name() const { return name_; }
-	void setName(QString name) { name_ = name; }
+
+	void setName(QString name) {
+		if(name_ != name) {
+			name_ = name;
+			emit nameChanged(name);
+		}
+	}
 
 	QDir root() const { return root_; }
-	void setRoot(QString path) { root_.setPath(path); }
+
+	void setRoot(QString path) {
+		if(root_ != path) {
+			root_.setPath(path);
+			emit rootChanged(root_);
+		}
+	}
+
+	void setRoot(QDir root) {
+		if(root_ != root) {
+			root_ = root;
+			emit rootChanged(root_);
+		}
+	}
 
 	const std::vector<ProjectImagePtr> & images() const { return images_; }
 
@@ -72,9 +94,14 @@ public:
 	//! Whether or not this set of images has a reference to \a cam
 	bool hasImageForCamera(CameraPtr cam) const { return defaults_.contains(cam); }
 
-private:
-	friend class Project;
+signals:
+	void nameChanged(QString name);
+	void rootChanged(QDir name);
+	void imageAdded(ProjectImagePtr img);
+	void imageRemoved(ProjectImagePtr img);
+	void defaultImageForCameraChanged(CameraPtr cam, ProjectImagePtr img);
 
+private:
 	QString id_;
 	QString name_;
 	QDir root_;

@@ -23,7 +23,6 @@
 
 #include <vector>
 
-#include "features/detector.hpp"
 #include "features/correspondence.hpp"
 
 #include "util/c++0x.hpp"
