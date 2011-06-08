@@ -36,16 +36,16 @@ ProjectItem::ProjectItem(QObject *obj)
     : obj(obj)
 {
 	if(const Camera *cam = qobject_cast<const Camera *>(obj)) {
-		connect(cam, SIGNAL(nameChanged(QString)), SLOT(update(QString)));
+		connect(cam, SIGNAL(nameChanged(QString)), SLOT(update()));
 	} else if(const ImageSet *imageSet = qobject_cast<const ImageSet *>(obj)) {
-		connect(imageSet, SIGNAL(nameChanged(QString)), SLOT(update(QString)));
-		connect(imageSet, SIGNAL(nameChanged(QString)), SLOT(update(QString)));
-		connect(imageSet, SIGNAL(nameChanged(QString)), SLOT(update(QString)));
+		connect(imageSet, SIGNAL(nameChanged(QString)), SLOT(update()));
+		connect(imageSet, SIGNAL(nameChanged(QString)), SLOT(update()));
+		connect(imageSet, SIGNAL(nameChanged(QString)), SLOT(update()));
 	} else if(const ProjectImage *image = qobject_cast<const ProjectImage *>(obj)) {
-		connect(image, SIGNAL(fileChanged(QString)), SLOT(update(QString)));
+		connect(image, SIGNAL(fileChanged(QString)), SLOT(update()));
 		connect(image, SIGNAL(cameraChanged(CameraPtr,CameraPtr)), SLOT(update(CameraPtr,CameraPtr)));
 		if(CameraPtr cam = image->camera())
-			connect(cam.get(), SIGNAL(nameChanged(QString)), SLOT(update(QString)));
+			connect(cam.get(), SIGNAL(nameChanged(QString)), SLOT(update()));
 	}
 
 	// XXX Does this remove me from tree widget?
@@ -85,7 +85,7 @@ void ProjectItem::update() {
 
 void ProjectItem::update(CameraPtr oldCam, CameraPtr newCam) {
 	if(oldCam) oldCam->disconnect(this);
-	if(newCam) connect(newCam.get(), SIGNAL(nameChanged(QString)), SLOT(update(QString)));
+	if(newCam) connect(newCam.get(), SIGNAL(nameChanged(QString)), SLOT(update()));
 	update();
 }
 

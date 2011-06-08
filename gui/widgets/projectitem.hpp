@@ -38,7 +38,6 @@ public:
 
 public slots:
 	void update();
-	void update(QString) { update(); }
 	void update(CameraPtr, CameraPtr);
 
 private:

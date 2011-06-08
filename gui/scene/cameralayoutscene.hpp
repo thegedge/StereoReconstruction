@@ -24,13 +24,14 @@
 #include <QFont>
 #include <QMap>
 #include <QString>
-#include <vector>
+
+#include <Eigen/Core>
 
 #include "sceneviewer.hpp"
 #include "util/c++0x.hpp"
 
+FORWARD_DECLARE(Project);
 FORWARD_DECLARE(Camera);
-typedef QMap<QString, CameraPtr> CameraMap;
 
 //
 //
@@ -38,7 +39,9 @@ typedef QMap<QString, CameraPtr> CameraMap;
 class QGLWidget;
 
 //! An OpenGL scene that shows the layout of a project's cameras
-class CameraLayoutScene : public Scene {
+class CameraLayoutScene : public QObject, public Scene {
+	Q_OBJECT
+
 public:
     CameraLayoutScene();
 	virtual ~CameraLayoutScene();
@@ -53,16 +56,17 @@ public:
 	virtual bool onMouseMove(QMouseEvent *evt);
 	virtual bool onMouseWheel(QWheelEvent *evt);
 
-public:
-	void setCameras(const std::vector<CameraPtr> &cameras);
-	void setSelectedCamera(const CameraPtr cam);
+public slots:
+	void updateCameras();
+	void setSelectedCamera(CameraPtr cam);
+	void setProject(ProjectPtr project);
 
 private:
 	void updateViewMatrix();
-	void updateCameras();
 
 private:
-	std::vector<CameraPtr> cameras;
+	ProjectPtr project;
+	CameraWeakPtr selectedCamera;
 	QFont font;
 
 	double cx, cy, cz;          // centroid of the camera cloud
@@ -70,7 +74,6 @@ private:
 	double radius, theta, phi;  // spherical coordinates
 	int lastx, lasty;           // mouse movement
 	int width, height;
-	CameraPtr selectedCamera;
 };
 
 #endif // CAMERALAYOUTSCENE_H

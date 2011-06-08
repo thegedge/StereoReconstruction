@@ -847,8 +847,7 @@ void MainWindow::setProject(QString fname) {
 			ui->actionShowHide_Project_Explorer->trigger();
 
 		// Set camera locations
-		QList<CameraPtr> cams = project->cameras().values();
-		sceneCameraLayout->setCameras(std::vector<CameraPtr>(cams.begin(), cams.end()));
+		sceneCameraLayout->setProject(project);
 
 		//
 		ui->actionFind_Features->setEnabled(true);

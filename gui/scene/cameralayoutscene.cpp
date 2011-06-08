@@ -30,6 +30,7 @@
 #include <QGLWidget>
 #include <QDebug>
 
+#include "project/project.hpp"
 #include "project/camera.hpp"
 
 //---------------------------------------------------------------------
@@ -79,7 +80,7 @@ void CameraLayoutScene::onHide() {
 
 //---------------------------------------------------------------------
 
-void CameraLayoutScene::setSelectedCamera(const CameraPtr cam) {
+void CameraLayoutScene::setSelectedCamera(CameraPtr cam) {
 	selectedCamera = cam;
 	updateViewMatrix();
 	updateCameras();
@@ -87,40 +88,45 @@ void CameraLayoutScene::setSelectedCamera(const CameraPtr cam) {
 
 //---------------------------------------------------------------------
 
-void CameraLayoutScene::setCameras(const std::vector<CameraPtr> &cams) {
-	cameras = cams;
-	selectedCamera.reset();
-	updateCameras();
+void CameraLayoutScene::setProject(ProjectPtr project) {
+	if(this->project != project) {
+		this->project = project;
+		selectedCamera.reset();
+		updateCameras();
+	}
 }
 
 void CameraLayoutScene::updateCameras() {
-	cx = cy = cz = 0.0;
-	foreach(CameraPtr cam, cameras) if(cam) {
-		const Eigen::Vector3d &C = cam->C();
-		cx += C[0];
-		cy += C[1];
-		cz += C[2];
+	if(project) {
+		cx = cy = cz = 0.0;
+		foreach(CameraPtr cam, project->cameras()) {
+			const Eigen::Vector3d &C = cam->C();
+			cx += C[0];
+			cy += C[1];
+			cz += C[2];
+		}
+
+		const int num_cameras = project->cameras().size();
+		cx /= num_cameras;
+		cy /= num_cameras;
+		cz /= num_cameras;
+
+		fx = fy = fz = std::numeric_limits<double>::infinity();
+		foreach(CameraPtr cam, project->cameras()) if(cam) {
+			const Eigen::Vector3d &C = cam->C();
+			fx = min(fx, 1.0 / fabs(C[0] - cx));
+			fy = min(fy, 1.0 / fabs(C[1] - cy));
+			fz = min(fz, 1.0 / fabs(C[2] - cz));
+		}
+
+		if(std::isinf(fx)) fx = 1;
+		if(std::isinf(fy)) fy = 1;
+		if(std::isinf(fz)) fz = 1;
+
+		fx = fy = fz = 5*std::min(std::min(fx, fy), fz);
+
+		updateViewMatrix();
 	}
-
-	cx /= cameras.size();
-	cy /= cameras.size();
-	cz /= cameras.size();
-
-	fx = fy = fz = std::numeric_limits<double>::infinity();
-	foreach(CameraPtr cam, cameras) if(cam) {
-		const Eigen::Vector3d &C = cam->C();
-		fx = min(fx, 1.0 / fabs(C[0] - cx));
-		fy = min(fy, 1.0 / fabs(C[1] - cy));
-		fz = min(fz, 1.0 / fabs(C[2] - cz));
-	}
-
-	if(std::isinf(fx)) fx = 1;
-	if(std::isinf(fy)) fy = 1;
-	if(std::isinf(fz)) fz = 1;
-
-	fx = fy = fz = 5*std::min(std::min(fx, fy), fz);
-
-	updateViewMatrix();
 }
 
 //---------------------------------------------------------------------
@@ -145,12 +151,14 @@ void CameraLayoutScene::onResize(int w, int h) {
 
 void CameraLayoutScene::onPaint(QGLWidget *parent) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	if(cameras.size() > 0) {
+	if(project && project->cameras().size() > 0) {
+		CameraPtr selectedCamera = this->selectedCamera.lock();
+
 		//
 		// Camera local coordinate systems
 		//
 		glBegin(GL_LINES);
-		foreach(CameraPtr cam, cameras) {
+		foreach(CameraPtr cam, project->cameras()) {
 			Eigen::Matrix3d R = 0.5*cam->R();
 			const Eigen::Vector3d &C = cam->C();
 
@@ -176,7 +184,7 @@ void CameraLayoutScene::onPaint(QGLWidget *parent) {
 		// Refractive interfaces
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		foreach(CameraPtr cam, cameras) {
+		foreach(CameraPtr cam, project->cameras()) {
 			if(cam->isRefractive()) {
 				// Find verticies of a quad that represents the plane
 				Plane3d plane = cam->fromLocalToGlobal(cam->plane());
@@ -227,7 +235,7 @@ void CameraLayoutScene::onPaint(QGLWidget *parent) {
 		// Camera labels
 		glDisable(GL_DEPTH_TEST);
 		glColor3f(1, 1, 1);
-		foreach(CameraPtr cam, cameras) {
+		foreach(CameraPtr cam, project->cameras()) {
 			const Eigen::Vector3d &C = cam->C();
 			parent->renderText(
 					(C[0] - cx)*fx,
@@ -273,7 +281,7 @@ void CameraLayoutScene::updateViewMatrix() {
 		glLoadIdentity();
 		gluLookAt(x, y, z, lx, ly, lz, ux, uy, uz);
 #else
-	if(selectedCamera) {
+	if(CameraPtr selectedCamera = this->selectedCamera.lock()) {
 		const Eigen::Matrix3d &R = selectedCamera->R();
 		const Eigen::Vector3d &C = selectedCamera->C();
 

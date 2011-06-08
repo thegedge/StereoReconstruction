@@ -79,7 +79,6 @@ protected:
 
 private slots:
 	//! .
-	void on_actionDump_Projection_Data_For_PMVS_triggered();
 	void removeTask(const Task *task);
 
 	//! .
@@ -130,6 +129,7 @@ private slots:
 
 	// Stereo menu
 	void on_actionRun_PMVS_triggered();
+	void on_actionDump_Projection_Data_For_PMVS_triggered();
 	void on_actionFind_Features_triggered();
 	void on_actionFind_Feature_Correspondences_triggered();
 	void on_actionCalibrate_Cameras_triggered();
