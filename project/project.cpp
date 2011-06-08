@@ -205,7 +205,6 @@ Project::Project(QString projectPath)
 		QDomNode imageNode = imageSetNode.firstChild();
 		while(!imageNode.isNull()) {
 			ProjectImagePtr image(new ProjectImage(imageSet->root().absoluteFilePath(getAttribute(imageNode, "file"))));
-			image->setImageSet(imageSet);
 			image->setExposure(getAttribute(imageNode, "exposure", "-1.0").toDouble());
 
 			if(cameras_.contains(getAttribute(imageNode, "for")))
@@ -386,14 +385,19 @@ QDomDocument *Project::toXML() {
 			blueResponseCurveNode.setAttribute("channel", "blue");
 
 			foreach(const Response &response, cam->response()) {
-				redResponseCurveNode.appendChild( createSimpleElement(doc, "value", response[0]) );
-				greenResponseCurveNode.appendChild( createSimpleElement(doc, "value", response[1]) );
-				blueResponseCurveNode.appendChild( createSimpleElement(doc, "value", response[2]) );
+				if(fabs(response[0]) > 1e-10)
+					redResponseCurveNode.appendChild( createSimpleElement(doc, "value", response[0]) );
+
+				if(fabs(response[1]) > 1e-10)
+					greenResponseCurveNode.appendChild( createSimpleElement(doc, "value", response[1]) );
+
+				if(fabs(response[2]) > 1e-10)
+					blueResponseCurveNode.appendChild( createSimpleElement(doc, "value", response[2]) );
 			}
 
-			cameraNode.appendChild(redResponseCurveNode);
-			cameraNode.appendChild(greenResponseCurveNode);
-			cameraNode.appendChild(blueResponseCurveNode);
+			if(redResponseCurveNode.childNodes().size() > 0) cameraNode.appendChild(redResponseCurveNode);
+			if(greenResponseCurveNode.childNodes().size() > 0) cameraNode.appendChild(greenResponseCurveNode);
+			if(blueResponseCurveNode.childNodes().size() > 0) cameraNode.appendChild(blueResponseCurveNode);
 		}
 
 		if(fabs(cam->refractiveIndex() - 1) > 1e-10 && fabs(cam->plane().distance()) > 1e-10) {
