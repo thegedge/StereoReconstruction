@@ -1,1 +1,58 @@
-See StereoReconstruction.pro for more information
+-----------------------------------------------------------------------------
+ StereoReconstruction Project File
+-----------------------------------------------------------------------------
+
+ This library uses C++0x functionality that exists in GCC 4.5 and Visual
+ Studio 2010 (or later versions). The following dependencies are required
+ when building StereoRecontruction:
+
+   - Qt 4.7.3 SDK
+   - OpenCV 2.2
+   - gsl 1.14
+   - Boost 1.46
+   - Eigen 2.x
+   - GLEW 1.5.8
+
+ Additionally, some options (see "Tunable Options" below) will require
+ additional libraries:
+
+   - OpenEXR 1.6.1 (when hdr option enabled)
+   - Intel TBB 3.0 (when tbb option enabled)
+   - Point Grey Research FlyCap 2.x SDK (when pgr option enabled)
+   - Point Grey Research Digiclops SDK (when pgr option enabled)
+   - Point Grey Research Triclops SDK (when pgr option enabled)
+   - Middlebury MRF library (when mrf option enabled)
+
+ The recommended environment for building StereoReconstruction is
+ Qt Creator 2.x.
+
+-----------------------------------------------------------------------------
+ Tunable Options
+-----------------------------------------------------------------------------
+
+ User-specific configuration options should be placed in a file named
+ `UserConfig.pri` in the same directory as the project file. Various
+ options that can be added to the CONFIG variable:
+
+   - hdr: Enables HDR imaging options
+
+   - tbb: Use Intel Thread Building Blocks library for parallel
+       computation whenever possible.
+
+   - openmp: Use OpenMP for parallel computation whenever possible.
+       If tbb is specified then OpenMP is ignored.
+
+   - mrf: Use MRF optimization for stereo, with the TRW-S method. If
+       not enabled, winner-take-all is used.
+
+   - splats: Use splats when rendering point clouds. If not enabled,
+       basic point rendering is used.
+
+   - pgr: Link against and use the PointGrey FlyCap SDK for image
+       capturing functionality.
+
+ Also, be sure to specify any non-standard library/include paths in
+ your user config file. To see which libraries are included for each
+ of the above options, browse down through this file.
+
+-----------------------------------------------------------------------------
