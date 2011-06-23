@@ -51,7 +51,7 @@
 #   include <tr1/functional>
 	namespace std {
 		using namespace std::tr1;
-		using namespace boost;
+		//using namespace boost;
 	}
 #endif
 

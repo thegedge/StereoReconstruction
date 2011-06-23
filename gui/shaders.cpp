@@ -18,7 +18,13 @@
 // with StereoReconstruction. If not, see <http:www.gnu.org/licenses/>.
 //
 //---------------------------------------------------------------------
-#include <gl.h>
+#ifdef PLATFORM_WIN
+#    include <windows.h>
+#endif
+#include <GL/glew.h>
+#include <GL/gl.h>
+
+#ifdef USE_OPENGL
 #include <fstream>
 #include <QDebug>
 
@@ -76,3 +82,7 @@ void loadProgram(const char *vsFile,
 }
 
 //---------------------------------------------------------------------
+#else
+GLuint loadShader(GLenum, const char *) { return 0; }
+void loadProgram(const char *, const char *, GLuint &, GLuint &, GLuint &) { }
+#endif

@@ -29,6 +29,10 @@
 
 #include <QMouseEvent>
 
+#if defined(USE_SPLATS) && defined(PLATFORM_WIN)
+#   include <GL/glew.h>
+#endif
+
 //---------------------------------------------------------------------
 namespace {
 #ifndef M_PI
@@ -79,7 +83,7 @@ PointsViewScene::~PointsViewScene() {
 //---------------------------------------------------------------------
 
 void PointsViewScene::initializeGL() {
-#ifdef PLATFORM_WIN
+#if defined(USE_SPLATS) && defined(PLATFORM_WIN)
 	if(glewInit() != GLEW_OK)
 		qDebug() << "Uh oh!";
 #endif
@@ -89,22 +93,24 @@ void PointsViewScene::initializeGL() {
 	glClearColor(1, 1, 1, 1);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LINE_STIPPLE);
-	glEnable(GL_POINT_SPRITE);
-	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 	glEnable(GL_COLOR_MATERIAL);
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_NORMALIZE);
 	glDisable(GL_DITHER);
 
-#ifndef PLATFORM_WIN
-	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-#endif
-	glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	glBlendFunc(GL_ONE, GL_ONE);
 	glDepthFunc(GL_LEQUAL);
 
 #ifdef USE_SPLATS
+	glEnable(GL_POINT_SPRITE);
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+
+#ifndef PLATFORM_WIN
+	glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
+#endif
+
 	//
 	// Create FBO and textures
 	//

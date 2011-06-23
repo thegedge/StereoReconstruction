@@ -63,11 +63,11 @@ INCLUDEPATH += .
 
 #---------------------------------------------------------------------
 CONFIG(debug, debug|release) { 
-    DEFINES += DEBUG _DEBUG
+	DEFINES *= DEBUG _DEBUG
     BUILD_PREFIX = debug
     TARGET = $${TARGET}_debug
 } else {
-    DEFINES += NDEBUG _NDEBUG
+	DEFINES *= NDEBUG _NDEBUG
     BUILD_PREFIX = release
 }
 
@@ -78,63 +78,64 @@ RCC_DIR = build/$$BUILD_PREFIX/resources
 
 #---------------------------------------------------------------------
 win32 { 
-    DEFINES += PLATFORM_WIN
-	LIBS += -lglew32
+	DEFINES *= PLATFORM_WIN
+	LIBS *= -lglew32
 }
 else:macx { 
-    DEFINES += PLATFORM_MAC
-    LIBS += -lGLEW
+	DEFINES *= PLATFORM_MAC
+	LIBS *= -lGLEW
 }
 
 #---------------------------------------------------------------------
-LIBS += -lopencv_core -lopencv_highgui -lopencv_legacy \
+LIBS *= -lopencv_core -lopencv_highgui -lopencv_legacy \
         -lopencv_imgproc -lopencv_features2d -lopencv_calib3d \
         -lopencv_contrib
 
-LIBS += -lgsl
+LIBS *= -lgsl
 
 #---------------------------------------------------------------------
 mrf {
-	LIBS += -lMRF
-	DEFINES += USE_MRF
+	LIBS *= -lMRF
+	DEFINES *= USE_MRF
 }
 
 #---------------------------------------------------------------------
 sba {
-	DEFINES += USE_SBA
-	LIBS += -lsba
+	DEFINES *= USE_SBA
+	LIBS *= -lsba
 }
 
 #---------------------------------------------------------------------
 hdr { 
-    LIBS += -llapack
-    LIBS += -lIlmImf -lHalf # OpenEXR
-	LIBS += -lboost_system-mt -lboost_filesystem-mt
-    DEFINES += HAS_HDR
+	LIBS *= -llapack
+	LIBS *= -lIlmImf -lHalf # OpenEXR
+	LIBS *= -lboost_system-mt -lboost_filesystem-mt
+	DEFINES *= HAS_HDR
 }
 
 #---------------------------------------------------------------------
 splats {
 	DEFINES += USE_SPLATS
+	DEFINES *= USE_OPENGL
 }
 
 #---------------------------------------------------------------------
 tbb {
-	DEFINES += USE_TBB
-	LIBS += -ltbb -ltbbmalloc
+	DEFINES *= USE_TBB
+	LIBS *= -ltbb -ltbbmalloc
 } else:openmp {
-    QMAKE_CXXFLAGS += -fopenmp
-    QMAKE_LFLAGS += -fopenmp
-	!msvc:LIBS += -lgomp
-    DEFINES += USE_OPENMP
+	QMAKE_CXXFLAGS *= -fopenmp
+	QMAKE_LFLAGS *= -fopenmp
+	!msvc:LIBS *= -lgomp
+	DEFINES *= USE_OPENMP
 }
 
 #---------------------------------------------------------------------
 pgr { 
-    DEFINES += USING_PGR
-    DEFINES += HAS_IMAGE_CAPTURE
-    SOURCES += gui/capture_impl/*.cpp
-    LIBS += -lFlyCapture2 -ldigiclops -ltriclops
+	DEFINES *= USING_PGR
+	DEFINES *= HAS_IMAGE_CAPTURE
+	SOURCES *= gui/capture_impl/*.cpp
+	LIBS *= -lFlyCapture2 -ldigiclops -ltriclops
 }
 
 #---------------------------------------------------------------------

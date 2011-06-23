@@ -22,8 +22,8 @@
 #include "feature.hpp"
 #include "project/projectimage.hpp"
 
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 
 //---------------------------------------------------------------------
 
