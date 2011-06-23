@@ -34,6 +34,8 @@
 //    and the ability to selectively view depth hypotheses from various
 //    stages of the algorithm (e.g., before and after cross-checking)
 //
+//  - Remember stereo parameters, perhaps include in project file?
+//
 #include "stereowidget.hpp"
 #include "ui_stereowidget.h"
 

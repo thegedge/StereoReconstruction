@@ -1,0 +1,8 @@
+.DS_Store
+.swp
+build
+dist
+Makefile
+mymain.cpp
+UserConfig.pri
+*.user*
