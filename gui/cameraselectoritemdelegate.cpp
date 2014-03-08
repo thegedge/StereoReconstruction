@@ -23,7 +23,6 @@
 #include "project/camera.hpp"
 
 #include <QComboBox>
-#include <QDebug>
 
 //---------------------------------------------------------------------
 

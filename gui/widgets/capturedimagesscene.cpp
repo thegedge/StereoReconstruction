@@ -107,8 +107,8 @@ void CapturedImagesScene::changeEvent(QEvent *e) {
     QGraphicsView::changeEvent(e);
     switch (e->type()) {
     case QEvent::LanguageChange:
-        actionZoom_In->setText(QApplication::translate("CapturedImagesScene", "Zoom In", 0, QApplication::UnicodeUTF8));
-		actionZoom_Out->setText(QApplication::translate("CapturedImagesScene", "Zoom Out", 0, QApplication::UnicodeUTF8));
+        actionZoom_In->setText(QApplication::translate("CapturedImagesScene", "Zoom In", 0));
+        actionZoom_Out->setText(QApplication::translate("CapturedImagesScene", "Zoom Out", 0));
         break;
     default:
         break;

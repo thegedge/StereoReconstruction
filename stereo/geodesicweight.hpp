@@ -24,7 +24,7 @@
 #include "util/vectorimage.hpp"
 
 
-struct GeodesicWeight : public std::binary_function<int, int, double> {
+class GeodesicWeight : public std::binary_function<int, int, double> {
 public:
 	GeodesicWeight() { }
 	GeodesicWeight(int radius) { initialize(radius); }

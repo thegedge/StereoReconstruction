@@ -53,6 +53,15 @@ private:
 
 	std::vector<GLfloat> verticies; // interleaved (position, normal, color) values
 	std::vector<GLuint> indicies; // (v1, v2, v3) tri indicies
+
+    double transx, transy, transz, scale;
+    double point_size;       // size of rendered points
+    double zoom;             // zoom level
+    double rotx, roty, rotz; // rotations for viewing models
+    double lastx, lasty;     // mouse movement
+    int width, height;
+
+#ifdef USE_SPLATS
 	GLuint vbo;
 
 	GLuint vertexShaders[NUM_PASSES], fragmentShaders[NUM_PASSES], programs[NUM_PASSES];
@@ -60,13 +69,7 @@ private:
 
 	GLuint frameBuffer;
 	GLuint depthBuffer, colorTexture;
-
-	double transx, transy, transz, scale;
-	double point_size;       // size of rendered points
-	double zoom;             // zoom level
-	double rotx, roty, rotz; // rotations for viewing models
-	double lastx, lasty;     // mouse movement
-	int width, height;
+#endif
 };
 
 #endif // POINTSVIEWSCENE_H

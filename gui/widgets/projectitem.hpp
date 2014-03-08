@@ -23,7 +23,6 @@
 
 #include <QObject>
 #include <QTreeWidgetItem>
-#include "util/c++0x.hpp"
 
 FORWARD_DECLARE(Camera);
 FORWARD_DECLARE(ImageSet);

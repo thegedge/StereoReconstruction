@@ -41,9 +41,6 @@
 #include <QTimer>
 #include <QVBoxLayout>
 
-#include <boost/scoped_array.hpp>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
 
 #ifdef HAS_HDR
 #   include "hdr/hdr.hpp"
@@ -301,7 +298,7 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 			bool hasColor = false;
 			bool isBinary = false;
 
-			unsigned int numVerticies = 0;
+			unsigned int numVertices = 0;
 			unsigned int numFaces = 0;
 
 			static QRegExp typeTest("n[xyz]");
@@ -320,7 +317,7 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 					if(elementTest.cap(1) == "face")
 						numFaces = elementTest.cap(2).toUInt();
 					else if(elementTest.cap(1) == "vertex")
-						numVerticies = elementTest.cap(2).toUInt();
+						numVertices = elementTest.cap(2).toUInt();
 				} else if(line.startsWith("format")) {
 					isBinary = line.contains("binary");
 				}
@@ -339,13 +336,13 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 			// Read in the verticies
 			//
 			GLfloat d[9] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-			std::vector<GLfloat> verticies(numVerticies * 9);
-			std::vector<GLfloat>::iterator vertexIter = verticies.begin();
+			std::vector<GLfloat> vertices(numVertices * 9);
+			std::vector<GLfloat>::iterator vertexIter = vertices.begin();
 			if(isBinary) {
 				uint len = 12 + (hasNormal ? 12 : 0) + (hasColor ? 3 : 0);
 
 				// TODO more efficient to read in larger chunk of data
-				for(unsigned int vertex = 0; vertex < numVerticies && !textStream.atEnd(); ++vertex) {
+				for(unsigned int vertex = 0; vertex < numVertices && !textStream.atEnd(); ++vertex) {
 					dataStream.readRawData(reinterpret_cast<char *>(d), len);
 					if(!hasNormal)
 						d[3] = d[4] = d[5] = 0;
@@ -357,7 +354,7 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 						vertexIter = std::copy(d, d + 9, vertexIter);
 				}
 			} else {
-				for(unsigned int vertex = 0; vertex < numVerticies && !textStream.atEnd(); ++vertex) {
+				for(unsigned int vertex = 0; vertex < numVertices && !textStream.atEnd(); ++vertex) {
 					textStream >> d[0] >> d[1] >> d[2];
 					if(hasNormal)
 						textStream >> d[3] >> d[4] >> d[5];
@@ -434,31 +431,31 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 						i3 = indicies[face*3 + 2];
 
 						// TODO determine vertex winding order
-						crossProduct(&verticies[i1*9], &verticies[i2*9], &verticies[i3*9], n);
+						crossProduct(&vertices[i1*9], &vertices[i2*9], &vertices[i3*9], n);
 						for(int i = 0; i < 3; ++i) {
-							verticies[i1*9 + 3 + i] += n[i];
-							verticies[i2*9 + 3 + i] += n[i];
-							verticies[i3*9 + 3 + i] += n[i];
+							vertices[i1*9 + 3 + i] += n[i];
+							vertices[i2*9 + 3 + i] += n[i];
+							vertices[i3*9 + 3 + i] += n[i];
 						}
 					}
 
-					for(unsigned int vertex = 0; vertex < numVerticies; ++vertex) {
-						float d = std::sqrt(verticies[vertex*9 + 3]*verticies[vertex*9 + 3]
-											+ verticies[vertex*9 + 4]*verticies[vertex*9 + 4]
-											+ verticies[vertex*9 + 5]*verticies[vertex*9 + 5]);
+					for(unsigned int vertex = 0; vertex < numVertices; ++vertex) {
+						float d = std::sqrt(vertices[vertex*9 + 3]*vertices[vertex*9 + 3]
+											+ vertices[vertex*9 + 4]*vertices[vertex*9 + 4]
+											+ vertices[vertex*9 + 5]*vertices[vertex*9 + 5]);
 
 						if(d > 1e-10) {
 							d = 1.0 / d;
-							verticies[vertex*9 + 3] *= d;
-							verticies[vertex*9 + 4] *= d;
-							verticies[vertex*9 + 5] *= d;
+							vertices[vertex*9 + 3] *= d;
+							vertices[vertex*9 + 4] *= d;
+							vertices[vertex*9 + 5] *= d;
 						}
 					}
 				} else {
-					for(unsigned int vertex = 0; vertex < numVerticies; ++vertex) {
-						verticies[vertex*9 + 3] = 0;
-						verticies[vertex*9 + 4] = 0;
-						verticies[vertex*9 + 5] = 1;
+					for(unsigned int vertex = 0; vertex < numVertices; ++vertex) {
+						vertices[vertex*9 + 3] = 0;
+						vertices[vertex*9 + 4] = 0;
+						vertices[vertex*9 + 5] = 1;
 					}
 				}
 			}
@@ -467,7 +464,7 @@ void MainWindow::on_actionView_PLY_File_triggered() {
 			//
 			//
 			ui->actionView_Points->trigger();
-			ui->pointsViewScene->setPoints(verticies, indicies);
+			ui->pointsViewScene->setPoints(vertices, indicies);
 		} else {
 			QMessageBox::warning(
 					this,
@@ -1087,16 +1084,16 @@ void MainWindow::on_actionConvert_RAW_images_triggered() {
 				if(fin.open(QFile::ReadOnly)) {
 					QByteArray data = fin.readAll();
 					if(!data.isEmpty()) {
-						boost::scoped_array<unsigned char> outData(new unsigned char[3*w*h]);
+                        std::vector<unsigned char> outData(3*w*h, 0);
 						rawImageToRGB_es(
 								reinterpret_cast<const unsigned char *>(data.constData()),
-								outData.get(),
+                                outData.data(),
 								w, h);
 
 						// Change filename to have png as the extension
 						QString outFileName = QString("%1.png").arg(finfo.completeBaseName());
 						QString outFile = finfo.absoluteDir().absoluteFilePath(outFileName);
-						QImage(outData.get(), w, h, QImage::Format_RGB888).save(outFile);
+                        QImage(outData.data(), w, h, QImage::Format_RGB888).save(outFile);
 					}
 
 					QDir(finfo.absolutePath()).remove(it.fileName());

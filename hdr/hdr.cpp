@@ -29,10 +29,7 @@ extern "C" {
 	#include "rgbe.h"
 }
 
-#include <cmath>
-
 #include <boost/filesystem.hpp>
-
 #include <OpenEXR/ImfRgba.h>
 #include <OpenEXR/ImfRgbaFile.h>
 

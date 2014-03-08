@@ -23,11 +23,9 @@
 
 #include <QDialog>
 #include <QGraphicsScene>
-#include <vector>
 
 #include "gui/gvitems/saveablepixmapitem.hpp"
 #include "stereo/refractioncalibration.hpp"
-#include "util/c++0x.hpp"
 
 //
 // Forward declarations

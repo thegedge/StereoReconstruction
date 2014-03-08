@@ -25,7 +25,6 @@
 #include <QObject>
 #include <QString>
 
-#include "util/c++0x.hpp"
 
 FORWARD_DECLARE(Task);
 

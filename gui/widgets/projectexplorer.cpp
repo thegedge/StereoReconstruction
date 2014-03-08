@@ -27,8 +27,6 @@
 #include "project/imageset.hpp"
 #include "project/projectimage.hpp"
 
-#include <QDebug>
-
 //---------------------------------------------------------------------
 
 Q_DECLARE_METATYPE(ProjectImage *);

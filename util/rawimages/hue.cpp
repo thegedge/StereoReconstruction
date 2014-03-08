@@ -19,8 +19,6 @@
 //
 //---------------------------------------------------------------------
 #include "rawimagereader.hpp"
-#include <cstdio>
-#include <cmath>
 
 using std::log;
 

@@ -21,7 +21,6 @@
 #include "radiometriccalibrationwidget.hpp"
 #include "ui_radiometriccalibrationwidget.h"
 
-#include <QDebug>
 #include <QGraphicsItem>
 #include <QGraphicsEllipseItem>
 #include <QInputDialog>

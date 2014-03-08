@@ -21,10 +21,6 @@
 #ifndef __LEVENBERGMARQUARDT_H__
 #define __LEVENBERGMARQUARDT_H__
 
-#include <Eigen/Core>
-#include <utility>
-#include <vector>
-
 
 /*!
  * A class to perform Levenberg-Marquardt optimization of a function.

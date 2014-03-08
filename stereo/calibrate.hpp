@@ -21,12 +21,7 @@
 #ifndef CALIBRATE_HPP
 #define CALIBRATE_HPP
 
-#include "util/c++0x.hpp"
 #include "gui/task.hpp"
-
-#include <Eigen/Core>
-#include <opencv/cv.h>
-#include <vector>
 
 //---------------------------------------------------------------------
 

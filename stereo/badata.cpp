@@ -25,9 +25,6 @@
 #include "project/projectimage.hpp"
 #include "calibrate.hpp" // for board_size
 
-#include <opencv/cv.h>
-#include <Eigen/SVD>
-
 //---------------------------------------------------------------------
 
 using namespace Eigen;
@@ -68,15 +65,11 @@ Vector3d triangulate(const std::vector<CameraPtr> &cameras,
 			const ProjMat &P = cameras[index]->P();
 
 			const double weight = (iteration == 0 ? 1.0 : 1.0 / P.row(2).dot(x));
-			//const Vector4d t1 = weight*(pt.x() * P.row(2) - P.row(0)).head<4>();
-			//const Vector4d t2 = weight*(pt.y() * P.row(2) - P.row(1)).head<4>();
-			const Vector4d t1 = weight*(pt.x() * P.row(2) - P.row(0)).start<4>();
-			const Vector4d t2 = weight*(pt.y() * P.row(2) - P.row(1)).start<4>();
+            const Vector4d t1 = weight*(pt.x() * P.row(2) - P.row(0)).head<4>();
+            const Vector4d t2 = weight*(pt.y() * P.row(2) - P.row(1)).head<4>();
 
-			//A.row(tindex + 0) = t1.head<3>();
-			//A.row(tindex + 1) = t2.head<3>();
-			A.row(tindex + 0) = t1.start(3);
-			A.row(tindex + 1) = t2.start(3);
+            A.row(tindex + 0) = t1.head<3>();
+            A.row(tindex + 1) = t2.head<3>();
 			b[tindex + 0] = -t1[3];
 			b[tindex + 1] = -t2[3];
 
@@ -84,22 +77,19 @@ Vector3d triangulate(const std::vector<CameraPtr> &cameras,
 		}
 
 		//
-		//Vector3d xt = A.jacobiSvd().solve(b);
-		Vector3d xt;
-		A.svd().solve(b, &xt);
+        Vector3d xt = A.jacobiSvd().solve(b);
+//		Vector3d xt;
+//		A.svd().solve(b, &xt);
 
 		// Break if new solution isn't much different from previous
-		//if(iteration > 0 && (x.head<3>() - xt).squaredNorm() < 1e-10)
-		if(iteration > 0 && (x.start<3>() - xt).squaredNorm() < 1e-10)
+        if(iteration > 0 && (x.head<3>() - xt).squaredNorm() < 1e-10)
 			break;
 
-		//x.head<3>() = xt;
-		x.start<3>() = xt;
+        x.head<3>() = xt;
 		break;
 	}
 
-	//return x.head<3>();
-	return x.start<3>();
+    return x.head<3>();
 }
 
 //---------------------------------------------------------------------
@@ -111,8 +101,8 @@ BundleAdjustmentData::BundleAdjustmentData(ProjectPtr project,
 	: cameras(cameras)
 {
 	// Collect info
-	for(size_t img_index = 0; img_index < imageSets.size(); ++img_index) {
-		for(size_t pt_index = 0; pt_index < board_size.area(); ++pt_index) {
+    for(size_t img_index = 0; img_index < imageSets.size(); ++img_index) {
+        for(int pt_index = 0; pt_index < board_size.area(); ++pt_index) {
 			// First see if we can actually triangulate a point
 			std::vector<bool> triangulate_mask(cameras.size(), false);
 			std::vector<Vector2d> triangulate_points(cameras.size());

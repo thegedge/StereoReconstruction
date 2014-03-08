@@ -28,7 +28,6 @@
 #include "project/projectimage.hpp"
 
 #include <QComboBox>
-#include <QDebug>
 #include <QEvent>
 #include <QHeaderView>
 #include <QImage>

@@ -21,8 +21,6 @@
 #ifndef PLANE_HPP
 #define PLANE_HPP
 
-#include <Eigen/Core>
-#include <cmath>
 
 //! Three-dimensional plane, using double precision.
 class Plane3d {

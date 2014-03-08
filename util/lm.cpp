@@ -25,11 +25,6 @@
 //
 #include "lm.hpp"
 
-#include <cmath>
-#include <Eigen/LU>
-#include <limits>
-#include "util/c++0x.hpp"
-
 #ifdef USE_TBB
 #   include <tbb/tbb.h>
 #endif
@@ -105,13 +100,11 @@ void LevenbergMarquardt::optimize(Function &f, const Points &pts, Model &model, 
 			H(p, p) *= 1.0 + lambda;
 
 		// Solve H d = -g
-		//Model new_model = H.lu().solve(-g);
-		//if( (H*new_model).isApprox(-g, 1e-10) ) {
-		Model new_model;
-		if(!H.lu().solve(-g, &new_model)) {
-			++term;
-			continue;
-		}
+        Model new_model = H.lu().solve(-g);
+        if( (H*new_model).isApprox(-g, 1e-10) ) {
+            ++term;
+            continue;
+        }
 
 		//
 		bool bad_model = false;

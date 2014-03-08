@@ -20,11 +20,6 @@
 //---------------------------------------------------------------------
 #include "featuredb.hpp"
 
-#include <fstream>
-#include <QDebug>
-
-//---------------------------------------------------------------------
-
 
 Features & FeatureDatabase::features(ProjectImagePtr img) {
 	return features_[img];

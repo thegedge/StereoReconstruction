@@ -23,8 +23,6 @@
 
 #include <QObject>
 #include <QFileInfo>
-#include <cmath>
-#include "util/c++0x.hpp"
 
 //
 // Forward declarations

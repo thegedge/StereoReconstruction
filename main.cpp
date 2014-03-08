@@ -19,18 +19,9 @@
 //
 //---------------------------------------------------------------------
 #include <QApplication>
-
-#include <cstdlib>
-#include <ctime>
-
 #include "gui/mainwindow.hpp"
 
-//
-namespace boost {
-	void throw_exception(const std::exception &) { }
-}
 
-//
 int main(int argc, char *argv[]) {
 	QApplication a(argc, argv);
 

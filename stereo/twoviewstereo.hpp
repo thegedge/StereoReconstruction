@@ -22,12 +22,9 @@
 #define STEREO_HPP
 
 #include "gui/task.hpp"
-#include "util/c++0x.hpp"
 #include "util/plane.hpp"
 #include "util/ray.hpp"
 #include "util/vectorimage.hpp"
-
-#include <vector>
 
 #include <QApplication>
 #include <QImage>

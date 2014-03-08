@@ -21,13 +21,9 @@
 #ifndef CORRESPONDENCE_HPP
 #define CORRESPONDENCE_HPP
 
-#include "util/c++0x.hpp"
 #include "detector.hpp"
 
-#include <utility>
-#include <vector>
 
-//
 FORWARD_DECLARE(Feature);
 
 typedef std::pair<FeaturePtr, FeaturePtr> Correspondence;

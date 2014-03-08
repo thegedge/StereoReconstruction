@@ -21,7 +21,6 @@
 #ifndef LINEITER_HPP
 #define LINEITER_HPP
 
-#include <algorithm>
 
 //! .
 bool clipLine(int &x1, int &y1, int &x2, int &y2, int w, int h);

@@ -22,7 +22,6 @@
 #include "ui_findfeaturesdialog.h"
 
 #include <QApplication>
-#include <QDebug>
 #include <QPushButton>
 #include <QSet>
 

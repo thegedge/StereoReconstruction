@@ -22,10 +22,7 @@
 #define CAPTUREIMAGESTHREAD_H
 
 #include <QThread>
-#include <vector>
-#include <boost/shared_array.hpp>
 
-#include "util/c++0x.hpp"
 
 //! Simple wrapper for some raw data that represents a 2D image
 template <class ImageDataType>

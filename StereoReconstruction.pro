@@ -20,11 +20,11 @@
 #---------------------------------------------------------------------
 # See README for build instructions
 #---------------------------------------------------------------------
-QT += opengl xml xmlpatterns
 TEMPLATE = app
 TARGET = StereoReconstruction
-DESTDIR = dist
-MAIN_CPP =
+CONFIG += c++11 warn_on precompile_header
+QT += widgets opengl xml xmlpatterns printsupport
+QMAKE_MAC_SDK = macosx10.9
 
 exists(UserConfig.pri):include(UserConfig.pri)
 
@@ -32,29 +32,31 @@ exists(UserConfig.pri):include(UserConfig.pri)
 isEmpty(MAIN_CPP):MAIN_CPP = main.cpp
 
 SOURCES += $${MAIN_CPP} \
-	gui/*.cpp \
-	gui/dialogs/*.cpp \
-	gui/widgets/*.cpp \
-	gui/gvitems/*.cpp \
-	project/*.cpp \
-	features/*.cpp \
-	hdr/*.c* \
-	stereo/*.cpp \
-	util/*.cpp \
-	util/rawimages/*.cpp
+    $$files(gui/*.cpp) \
+    $$files(gui/dialogs/*.cpp) \
+    $$files(gui/widgets/*.cpp) \
+    $$files(gui/gvitems/*.cpp) \
+    $$files(project/*.cpp) \
+    $$files(features/*.cpp) \
+    $$files(hdr/*.c*) \
+    $$files(stereo/*.cpp) \
+    $$files(util/*.cpp) \
+    $$files(util/rawimages/*.cpp)
 
-HEADERS += gui/*.h* \
-	gui/dialogs/*.hpp \
-	gui/widgets/*.hpp \
-	gui/gvitems/*.hpp \
-	project/*.hpp \
-	features/*.hpp \
-	hdr/*.h* \
-	stereo/*.hpp \
-	util/*.hpp \
-	util/rawimages/*.hpp
+HEADERS += $$files(gui/*.h*) \
+    $$files(gui/dialogs/*.hpp) \
+    $$files(gui/widgets/*.hpp) \
+    $$files(gui/gvitems/*.hpp) \
+    $$files(project/*.hpp) \
+    $$files(features/*.hpp) \
+    $$files(hdr/*.h*) \
+    $$files(stereo/*.hpp) \
+    $$files(util/*.hpp) \
+    $$files(util/rawimages/*.hpp)
 
-FORMS += gui/forms/*.ui
+PRECOMPILED_HEADER = util/precompiled.hpp
+
+FORMS += $$files(gui/forms/*.ui)
 
 OTHER_FILES += shaders/*.* project/project.xsd GPL_HEADER LICENSE README
 
@@ -65,16 +67,17 @@ INCLUDEPATH += .
 CONFIG(debug, debug|release) { 
 	DEFINES *= DEBUG _DEBUG
     BUILD_PREFIX = debug
-    TARGET = $${TARGET}_debug
 } else {
 	DEFINES *= NDEBUG _NDEBUG
     BUILD_PREFIX = release
 }
 
-OBJECTS_DIR = build/$$BUILD_PREFIX/objects
-MOC_DIR = build/$$BUILD_PREFIX/moc
-UI_DIR = build/$$BUILD_PREFIX/ui
-RCC_DIR = build/$$BUILD_PREFIX/resources
+#---------------------------------------------------------------------
+
+QMAKE_CXXFLAGS += -isystem /usr/local/include
+QMAKE_CXXFLAGS += -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded  \
+                  -Wno-exit-time-destructors -Wno-unused-private-field
+LIBS += -L/usr/local/lib
 
 #---------------------------------------------------------------------
 win32 { 
@@ -89,7 +92,7 @@ else:macx {
 #---------------------------------------------------------------------
 LIBS *= -lopencv_core -lopencv_highgui -lopencv_legacy \
         -lopencv_imgproc -lopencv_features2d -lopencv_calib3d \
-        -lopencv_contrib
+        -lopencv_contrib -lopencv_nonfree
 
 LIBS *= -lgsl
 

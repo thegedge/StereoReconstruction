@@ -54,11 +54,8 @@
 #include "stereo/badata.hpp"
 #include "stereo/twoviewstereo.hpp"
 #include "util/vectorimage.hpp"
-#include <algorithm>
-#include <map>
 
 #include <QComboBox>
-#include <QDebug>
 #include <QFileDialog>
 #include <QGraphicsDropShadowEffect>
 #include <QGraphicsEllipseItem>
@@ -173,9 +170,8 @@ StereoWidget::StereoWidget(QWidget *parent)
 	ui->toolZoomOut->setDefaultAction(ui->actionZoom_Out);
 
 	//
-	ui->preview->setRenderHint(QPainter::Antialiasing);
 	ui->preview->setScene(&scene);
-	scene.installEventFilter(this);
+    scene.installEventFilter(this);
 
 	//
 	addAction(ui->actionZoom_In);
@@ -316,9 +312,9 @@ void StereoWidget::on_imageSetsList_currentItemChanged(
 		QListWidgetItem *previous)
 {
 	if(!current || !project)
-		return;
+        return;
 
-	QString imageSetId = current->data(Qt::UserRole).toString();
+    QString imageSetId = current->data(Qt::UserRole).toString();
 	ImageSetPtr imageSet = project->imageSet(imageSetId);
 
 	//
@@ -348,7 +344,7 @@ void StereoWidget::on_imageSetsList_currentItemChanged(
 		if(!leftPixmap) {
 			leftPixmap = new SaveablePixmapItem;
 			leftPixmap->addMenuItem(tr("Rotate Features"), this, SLOT(rotateLeftFeatures()));
-			scene.addItem(leftPixmap);
+            scene.addItem(leftPixmap);
 		}
 
 		QPixmap pixmap = QPixmap::fromImage(qleft);
@@ -360,7 +356,7 @@ void StereoWidget::on_imageSetsList_currentItemChanged(
 		if(!rightPixmap) {
 			rightPixmap = new SaveablePixmapItem;
 			rightPixmap->addMenuItem(tr("Rotate Features"), this, SLOT(rotateRightFeatures()));
-			scene.addItem(rightPixmap);
+            scene.addItem(rightPixmap);
 		}
 
 		pixmap = QPixmap::fromImage(qright);
@@ -436,7 +432,7 @@ void StereoWidget::updateFeatures(int row) {
 		group->setVisible(row == ui->imageSetsList->currentRow());
 		group->setPos(leftPixmap->sceneBoundingRect().topLeft());
 		group->setZValue(500);
-		scene.addItem(group);
+        scene.addItem(group);
 
 		//
 		ImageSetPtr imageSet = project->imageSet(item->data(Qt::UserRole).toString());
@@ -670,8 +666,8 @@ QGraphicsItem * StereoWidget::epipolarLineItem(CameraPtr left, CameraPtr right, 
 		}
 	}
 
-	if(!first)
-		return scene.addPath(path, pen);
+    if(!first)
+        return scene.addPath(path, pen);
 	return nullptr;
 }
 
@@ -679,9 +675,9 @@ QGraphicsItem * StereoWidget::epipolarLineItem(CameraPtr left, CameraPtr right, 
 
 void StereoWidget::updateView() {
 	//
-	if(pointItem) pointItem->setVisible(false);
-	if(mp1) mp1->setVisible(false);
-	if(mp2) mp2->setVisible(false);
+    if(pointItem) pointItem->setVisible(false);
+    if(mp1) mp1->setVisible(false);
+    if(mp2) mp2->setVisible(false);
 
 	//
 	if(epipolarCurve) {
@@ -763,7 +759,7 @@ void StereoWidget::updateView() {
 				pointItem->setRect(point.x() - 4, point.y() - 4, 8, 8);
 				//pointItem->setPos(point.x() - 4, point.y() - 4);
 			} else {
-				pointItem = scene.addEllipse(point.x() - 4, point.y() - 4, 8, 8, QPen(Qt::white, 0));
+                pointItem = scene.addEllipse(point.x() - 4, point.y() - 4, 8, 8, QPen(Qt::white, 0));
 				//QGraphicsLineItem *l1 = scene.addLine(4, 0, 4, 8, QPen(Qt::white, 1));
 				//QGraphicsLineItem *l2 = scene.addLine(0, 4, 8, 4, QPen(Qt::white, 1));
 				//pointItem = scene.createItemGroup(QList<QGraphicsItem *>() << l1 << l2);

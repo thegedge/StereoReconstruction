@@ -25,10 +25,6 @@
 #include <QImage>
 #include <QThread>
 
-#include <utility>
-#include <vector>
-
-#include "util/c++0x.hpp"
 #include "gui/task.hpp"
 
 //

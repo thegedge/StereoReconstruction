@@ -22,7 +22,6 @@
 #include "ui_pmvsdialog.h"
 
 #include <QAbstractButton>
-#include <QDebug>
 #include <QDir>
 #include <QProcess>
 #include <QPushButton>

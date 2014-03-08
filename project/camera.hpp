@@ -22,12 +22,8 @@
 #define CAMERA_H
 
 #include <QObject>
-#include <vector>
-#include <boost/array.hpp>
-#include <Eigen/Core>
 
 #include "features/featuredb.hpp"
-#include "util/c++0x.hpp"
 #include "util/plane.hpp"
 #include "util/ray.hpp"
 
@@ -35,7 +31,7 @@
 //
 //
 typedef Eigen::Matrix<double, 3, 4> ProjMat;
-typedef boost::array<double, 5> LensDistortions;
+typedef std::array<double, 5> LensDistortions;
 typedef Eigen::Vector3d Response;
 typedef std::vector<Response> Responses;
 

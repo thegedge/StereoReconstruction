@@ -21,7 +21,6 @@
 #ifndef LINALG_HPP
 #define LINALG_HPP
 
-#include <Eigen/Core>
 
 namespace linalg {
 

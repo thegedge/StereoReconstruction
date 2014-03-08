@@ -22,12 +22,9 @@
 #define FEATUREDB_HPP
 
 #include <QDomElement>
-
-#include <map>
-
 #include "feature.hpp"
 #include "correspondence.hpp"
-#include "util/c++0x.hpp"
+
 
 FORWARD_DECLARE(ProjectImage);
 

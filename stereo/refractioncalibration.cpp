@@ -32,19 +32,6 @@
 //---------------------------------------------------------------------
 #include "refractioncalibration.hpp"
 
-#include <QDebug>
-
-#include <algorithm>
-#include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <limits>
-#include <string>
-#include <vector>
-
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
 #include "badata.hpp" // for triangulate
 #include "calibrate.hpp" // for board_size
 #include "features/feature.hpp"
@@ -53,8 +40,7 @@
 #include "project/imageset.hpp"
 #include "stereo/multiviewstereo.hpp"
 
-#include <Eigen/LU>
-#include <Eigen/SVD>
+#include <QDebug>
 
 #ifdef USE_SBA
 #   include <sba.h>
@@ -365,9 +351,6 @@ bool RefractionCalibration::calibrate() {
 								opts,
 								info);
 #endif
-	qDebug() << (ret == SBA_ERROR ? "error" : "no error") << info[6];
-	if(ret != SBA_ERROR)
-		qDebug() << info[0] << info[1];
 #else
 	// For each image pair, find features if necessary, establish correspondences
 	std::vector<IntPair> point2cams;

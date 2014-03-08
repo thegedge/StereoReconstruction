@@ -21,11 +21,8 @@
 #ifndef VECTORIMAGE_HPP
 #define VECTORIMAGE_HPP
 
-#include <cmath>
-#include <string>
-#include <vector>
 #include <QImage>
-#include "util/c++0x.hpp"
+
 
 //! RGBA quad
 struct RGBA {

@@ -21,9 +21,6 @@
 #ifndef FLOYDWARSHALL_HPP
 #define FLOYDWARSHALL_HPP
 
-#include <deque>
-#include <vector>
-#include <cstddef>
 
 /*!
  * Implementation of Floyd-Warshall's method for computing all-pairs

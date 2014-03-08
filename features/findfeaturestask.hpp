@@ -22,8 +22,6 @@
 #define FINDFEATURESTASK_HPP
 
 #include "gui/task.hpp"
-#include "util/c++0x.hpp"
-#include <vector>
 
 FORWARD_DECLARE(Project);
 FORWARD_DECLARE(Camera);

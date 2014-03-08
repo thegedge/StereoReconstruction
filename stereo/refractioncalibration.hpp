@@ -21,11 +21,8 @@
 #ifndef REFRACTIONCALIBRATION_HPP
 #define REFRACTIONCALIBRATION_HPP
 
-#include <vector>
-
 #include "features/correspondence.hpp"
 
-#include "util/c++0x.hpp"
 #include "util/lm.hpp"
 
 FORWARD_DECLARE(Project);

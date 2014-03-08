@@ -24,7 +24,6 @@
 #include <QTableWidget>
 #include <QImage>
 
-#include "util/c++0x.hpp"
 
 //
 // Forward declarations

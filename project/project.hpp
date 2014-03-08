@@ -26,10 +26,7 @@
 #include <QObject>
 #include <QString>
 
-#include <boost/noncopyable.hpp>
-
 #include "features/featuredb.hpp"
-#include "util/c++0x.hpp"
 
 //
 // Forward declarations
@@ -45,11 +42,14 @@ typedef QMap<QString, ImageSetPtr> ImageSetMap;
 /*!
  * A project for StereoReconstruction.
  */
-class Project : public QObject, public boost::noncopyable {
+class Project : public QObject {
 	Q_OBJECT
 
 public:
 	Project(QString projectPath = QString());
+
+    Project(const Project &) = delete;
+    Project & operator=(const Project &) = delete;
 
 public:
 	//! Set the path for the project

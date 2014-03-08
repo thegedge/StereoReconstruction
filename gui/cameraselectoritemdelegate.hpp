@@ -24,8 +24,6 @@
 #include <QStringList>
 #include <QStyledItemDelegate>
 
-#include <vector>
-#include "util/c++0x.hpp"
 
 FORWARD_DECLARE(Project);
 

@@ -31,7 +31,6 @@
 #include "project/camera.hpp"
 #include "project/imageset.hpp"
 #include "project/projectimage.hpp"
-#include "util/c++0x.hpp"
 #include "util/floydwarshall.hpp"
 
 #include "badata.hpp"
@@ -40,17 +39,6 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QVector>
-
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <limits>
-#include <string>
-#include <vector>
-
-#include <boost/bind.hpp>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
 
 #ifdef USE_SBA
 #   include <sba.h>
@@ -350,7 +338,8 @@ void CameraCalibration::estimateIntrinsics(const std::vector<int> &imageIndices)
 		std::vector<std::vector<cv::Point3f> > object_points_temp;
 		std::vector<std::vector<cv::Point2f> > image_points_temp;
 		foreach(int img_index, imageIndices) {
-			if(image_points[cam_index][img_index].size() == board_size.area()) {
+            int num_points = static_cast<int>(image_points[cam_index][img_index].size());
+            if(num_points == board_size.area()) {
 				num_points += board_size.area();
 				object_points_temp.push_back(object_points);
 				image_points_temp.push_back(image_points[cam_index][img_index]);
@@ -458,10 +447,10 @@ void CameraCalibration::estimateExtrinsics(const std::vector<int> &imageIndices)
 			std::vector<std::vector<cv::Point3f> > object_points_temp;
 			std::vector<std::vector<cv::Point2f> > image_points1, image_points2;
 			foreach(int img_index, imageIndices) {
-				if(image_points[cam_index][img_index].size() == board_size.area()
-					&& image_points[cam_index2][img_index].size() == board_size.area())
-				{
-					++numSets;
+                int num_points1 = static_cast<int>(image_points[cam_index][img_index].size());
+                int num_points2 = static_cast<int>(image_points[cam_index2][img_index].size());
+                if(num_points1 == board_size.area() && num_points2 == board_size.area()) {
+                    ++numSets;
 					object_points_temp.push_back(object_points);
 					image_points1.push_back(image_points[cam_index][img_index]);
 					image_points2.push_back(image_points[cam_index2][img_index]);
@@ -729,8 +718,8 @@ void CameraCalibration::calibrate() {
 	for(size_t index = 0; index < imageSets.size(); ++index)
 		indices[index] = index;
 
-	const int num = std::min(static_cast<int>(indices.size()),
-	                         std::max(30, static_cast<int>((4 * indices.size()) / 6)) );
+    const int num = std::min(static_cast<int>(indices.size()),
+                             std::max(30, static_cast<int>((4 * indices.size()) / 6)) );
 
 	// Initial lowest error based on calibration that already exists in cams
 	double lowestError = computeError();
@@ -820,7 +809,7 @@ void CameraCalibration::calibrate() {
 			lowestError = currentError;
 		}
 
-		if(num == indices.size())
+        if(static_cast<size_t>(num) == indices.size())
 			break;
 	}
 

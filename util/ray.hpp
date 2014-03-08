@@ -21,8 +21,6 @@
 #ifndef RAY_HPP
 #define RAY_HPP
 
-#include <Eigen/Core>
-
 #include "plane.hpp"
 
 //! Three-dimensional ray, using double precision.

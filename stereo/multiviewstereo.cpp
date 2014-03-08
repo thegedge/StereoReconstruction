@@ -53,10 +53,6 @@
 #include "project/projectimage.hpp"
 #include "util/lineiter.hpp"
 
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-
 #include <QColor>
 #include <QDebug>
 #include <QTime>
@@ -294,7 +290,7 @@ QImage MultiViewStereo::depthMap(CameraPtr view) const {
 //
 void outputPLYFile(const std::string &path, const std::vector<PLYPoint> &points) {
 	//
-	std::ofstream lout(path);
+	std::ofstream lout(path.c_str());
 	lout << "ply\n"
 		 << "format ascii 1.0\n"
 		 << "element vertex " << points.size() << "\n"
@@ -456,7 +452,6 @@ void MultiViewStereo::runTask() {
 	//
 	// Output stuff
 	//
-	std::vector<PLYPoint> allPoints;
 	for(size_t view_index = 0; view_index < views.size(); ++view_index) {
 		if(!views[view_index] || isCancelled())
 			continue;

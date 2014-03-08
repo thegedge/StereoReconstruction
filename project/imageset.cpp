@@ -21,8 +21,6 @@
 #include "imageset.hpp"
 #include "projectimage.hpp"
 
-#include <algorithm>
-
 //---------------------------------------------------------------------
 
 ImageSet::ImageSet(QString id, QString name)

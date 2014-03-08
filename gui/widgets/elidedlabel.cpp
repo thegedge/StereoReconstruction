@@ -19,8 +19,6 @@
 //
 //---------------------------------------------------------------------
 #include "elidedlabel.hpp"
-
-#include <QDebug>
 #include <QPainter>
 #include <QResizeEvent>
 

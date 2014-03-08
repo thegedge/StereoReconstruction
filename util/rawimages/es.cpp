@@ -19,7 +19,6 @@
 //
 //---------------------------------------------------------------------
 #include "rawimagereader.hpp"
-#include <cmath>
 
 //! Edge sensing + bilinear.
 unsigned char * rawImageToRGB_es(const unsigned char *data, unsigned char *out, int w, int h) {

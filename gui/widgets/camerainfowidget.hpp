@@ -21,7 +21,6 @@
 #ifndef CAMERAINFOWIDGET_HPP
 #define CAMERAINFOWIDGET_HPP
 
-#include "util/c++0x.hpp"
 #include <QWidget>
 
 

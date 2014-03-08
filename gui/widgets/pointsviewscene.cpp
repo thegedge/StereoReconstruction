@@ -21,17 +21,7 @@
 #include "pointsviewscene.hpp"
 #include "gui/shaders.hpp"
 
-#define _USE_MATH_DEFINES
-
-#include <algorithm>
-#include <limits>
-#include <cmath>
-
 #include <QMouseEvent>
-
-#if defined(USE_SPLATS) && defined(PLATFORM_WIN)
-#   include <GL/glew.h>
-#endif
 
 //---------------------------------------------------------------------
 namespace {
@@ -48,14 +38,16 @@ namespace {
 //---------------------------------------------------------------------
 
 PointsViewScene::PointsViewScene()
-	: frameBuffer(0)
-	, depthBuffer(0), colorTexture(0)
-    , transx(-1), transy(-1), transz(-1), scale(-1)
+    : transx(-1), transy(-1), transz(-1), scale(-1)
 	, point_size(1)
 	, zoom(5)
 	, rotx(0.3), roty(M_PI), rotz(M_PI)
 	, lastx(0), lasty(0)
 	, width(1), height(1)
+#ifdef USE_SPLATS
+    , frameBuffer(0)
+    , depthBuffer(0), colorTexture(0)
+#endif
 {
 	animationTimer.setInterval(1000 / 30);
 	animationTimer.setSingleShot(false);

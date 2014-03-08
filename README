@@ -2,15 +2,15 @@
  StereoReconstruction Project File
 -----------------------------------------------------------------------------
 
- This library uses C++0x functionality that exists in GCC 4.5 and Visual
- Studio 2010 (or later versions). The following dependencies are required
- when building StereoRecontruction:
+ This program has to be compiled under the C++11 spec (the latest compilers
+ should have sufficient support). The following dependencies are required when
+ building StereoRecontruction:
 
-   - Qt 4.7.3 SDK
+   - Qt 5.2.1
    - OpenCV 2.2
    - gsl 1.14
    - Boost 1.46
-   - Eigen 2.x
+   - Eigen 3
    - GLEW 1.5.8
 
  Additionally, some options (see "Tunable Options" below) will require

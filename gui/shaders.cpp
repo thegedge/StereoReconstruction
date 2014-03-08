@@ -21,11 +21,9 @@
 #ifdef PLATFORM_WIN
 #    include <windows.h>
 #endif
-#include <GL/glew.h>
-#include <GL/gl.h>
+
 
 #ifdef USE_OPENGL
-#include <fstream>
 #include <QDebug>
 
 //---------------------------------------------------------------------

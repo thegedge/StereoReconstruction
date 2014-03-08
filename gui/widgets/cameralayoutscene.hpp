@@ -26,9 +26,6 @@
 #include <QMap>
 #include <QString>
 
-#include <Eigen/Core>
-
-#include "util/c++0x.hpp"
 
 FORWARD_DECLARE(Project);
 FORWARD_DECLARE(Camera);

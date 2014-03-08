@@ -21,12 +21,6 @@
 #define _USE_MATH_DEFINES
 #include "cameralayoutscene.hpp"
 
-#include <cmath>
-#include <limits>
-#include <algorithm>
-
-#include <Eigen/Geometry>
-
 #include <QGLWidget>
 #include <QDebug>
 #include <QMouseEvent>

@@ -23,10 +23,6 @@
 #include <QtXml>
 #include <QtXmlPatterns>
 
-#include <cmath>
-#include <Eigen/QR>
-#include <Eigen/LU>
-
 #include "features/surf.hpp"
 #include "features/checkerboard.hpp"
 
@@ -45,8 +41,15 @@ namespace {
 	const QString PROJECT_NS = QString();
 	const QString SCHEMA_PATH = QString(":/project_schema");
 
-	QXmlSchema schema;
-	QXmlSchemaValidator validator;
+    QXmlSchema & getSchema() {
+        static QXmlSchema schema;
+        return schema;
+    }
+
+    QXmlSchemaValidator & getValidator() {
+        static QXmlSchemaValidator validator;
+        return validator;
+    }
 }
 //---------------------------------------------------------------------
 // Utility functions
@@ -74,7 +77,10 @@ Project::Project(QString projectPath)
 	if(projectPath.isNull())
 		return;
 
-	if(!schema.isValid()) {
+    auto & schema = getSchema();
+    auto & validator = getValidator();
+
+    if(!schema.isValid()) {
 		QFile schemaFile(SCHEMA_PATH);
 		if(schemaFile.open(QFile::ReadOnly) && schema.load(&schemaFile))
 			validator.setSchema(schema);

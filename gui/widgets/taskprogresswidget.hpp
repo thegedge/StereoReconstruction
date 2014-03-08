@@ -23,7 +23,6 @@
 
 #include <QString>
 #include <QWidget>
-#include "util/c++0x.hpp"
 
 //
 // Forward declarations

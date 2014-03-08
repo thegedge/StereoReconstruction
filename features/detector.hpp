@@ -21,10 +21,6 @@
 #ifndef DETECTOR_HPP
 #define DETECTOR_HPP
 
-#include "util/c++0x.hpp"
-#include <string>
-#include <vector>
-
 //
 FORWARD_DECLARE(Feature);
 FORWARD_DECLARE(ProjectImage);

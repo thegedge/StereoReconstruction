@@ -22,7 +22,7 @@
 #define ADAPTIVEWEIGHT_HPP
 
 #include "util/vectorimage.hpp"
-#include <vector>
+
 
 //! .
 class AdaptiveWeight : public std::binary_function<int, int, double> {

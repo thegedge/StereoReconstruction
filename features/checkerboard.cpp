@@ -23,11 +23,6 @@
 #include "project/imageset.hpp"
 #include "project/projectimage.hpp"
 
-#include <limits>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-//---------------------------------------------------------------------
 
 class CheckerboardFeature : public Feature {
 public:

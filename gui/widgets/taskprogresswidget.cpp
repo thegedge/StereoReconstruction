@@ -20,9 +20,7 @@
 //---------------------------------------------------------------------
 #include "taskprogresswidget.hpp"
 #include "ui_taskprogresswidget.h"
-
 #include "gui/task.hpp"
-#include <QDebug>
 
 //---------------------------------------------------------------------
 

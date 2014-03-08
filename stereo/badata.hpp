@@ -21,10 +21,6 @@
 #ifndef BADATA_HPP
 #define BADATA_HPP
 
-#include "util/c++0x.hpp"
-
-#include <Eigen/Core>
-#include <vector>
 
 FORWARD_DECLARE(Project);
 FORWARD_DECLARE(Camera);

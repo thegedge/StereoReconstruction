@@ -26,7 +26,6 @@
 #include "radiometriccalibrationwidget.hpp"
 
 #include <QBoxLayout>
-#include <QDebug>
 
 //---------------------------------------------------------------------
 

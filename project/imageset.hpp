@@ -26,13 +26,7 @@
 #include <QDir>
 #include <QMap>
 
-#include <vector>
-#include <map>
-
-#include <Eigen/Core>
-
 #include "features/featuredb.hpp"
-#include "util/c++0x.hpp"
 #include "util/plane.hpp"
 
 //

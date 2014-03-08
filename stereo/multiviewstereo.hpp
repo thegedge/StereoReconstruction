@@ -22,10 +22,8 @@
 #define MULTIVIEWSTEREO_HPP
 
 #include <QImage>
-#include <vector>
 
 #include "gui/task.hpp"
-#include "util/c++0x.hpp"
 #include "util/ray.hpp"
 #include "util/vectorimage.hpp"
 

@@ -25,8 +25,6 @@
 
 #include <digiclops.h>
 #include <triclops.h>
-
-#include <string>
 #include <QDebug>
 
 //---------------------------------------------------------------------

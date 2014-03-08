@@ -22,10 +22,6 @@
 #include "feature.hpp"
 #include "project/projectimage.hpp"
 
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
-
-//---------------------------------------------------------------------
 
 class SurfFeature : public Feature {
 public:
@@ -37,10 +33,10 @@ public:
 				float angle,
 				float response)
 		: Feature(x, y)
-		, descriptor(descriptor)
+        , descriptor(descriptor)
 		, size(size)
 		, angle(angle)
-		, response(response)
+        , response(response)
 	{ }
 
 public:

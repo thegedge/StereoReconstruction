@@ -21,7 +21,6 @@
 #include "browseforfilelineedit.hpp"
 #include "ui_browseforfilelineedit.h"
 
-#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>

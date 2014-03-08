@@ -28,10 +28,6 @@
 #include "project/projectimage.hpp"
 #include "util/lineiter.hpp"
 
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-
 #include <QColor>
 #include <QDebug>
 #include <QTime>

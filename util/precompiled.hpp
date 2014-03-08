@@ -18,47 +18,47 @@
 // with StereoReconstruction. If not, see <http:www.gnu.org/licenses/>.
 //
 //---------------------------------------------------------------------
-#ifndef CPP0X_HPP
-#define CPP0X_HPP
+#if defined(__cplusplus) && !defined(__OBJC__)
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__)
-#   include <memory>
-#   include <tuple>
-#   include <functional>
-#elif defined(_MSC_VER)
-#   include <memory>
-#   include <float.h>
-#   include <tuple>
-#   include <functional>
-	namespace std {
-		using namespace std::tr1;
+#define _USE_MATH_DEFINES
 
-		inline bool isnan(double x) {
-			return (_isnan(x) != 0);
-		}
+#include <algorithm>
+#include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdlib>
+#include <ctime>
+#include <deque>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+#include <limits>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
-		inline bool isfinite(double x) {
-			return (_finite(x) != 0);
-		}
+#include <boost/shared_array.hpp>
 
-		inline bool isinf(double x) {
-			return (_finite(x) == 0 && _isnan(x) == 0);
-		}
-	}
-#else
-#   include <tr1/memory>
-#   include <tr1/tuple>
-#   include <tr1/functional>
-	namespace std {
-		using namespace std::tr1;
-		//using namespace boost;
-	}
-#endif
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
+#include <eigen3/Eigen/LU>
+#include <eigen3/Eigen/QR>
+#include <eigen3/Eigen/SVD>
+
+#include <GL/glew.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
+#include <opencv2/nonfree/features2d.hpp>
+
 
 #define FORWARD_DECLARE(cls) \
-	class cls; \
-	typedef std::shared_ptr<cls> cls##Ptr; \
-	typedef std::weak_ptr<cls> cls##WeakPtr
+    class cls; \
+    typedef std::shared_ptr<cls> cls##Ptr; \
+    typedef std::weak_ptr<cls> cls##WeakPtr
 
-
-#endif // CPP0X_HPP
+#endif

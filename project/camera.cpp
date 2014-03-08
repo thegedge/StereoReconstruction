@@ -32,22 +32,10 @@
 //---------------------------------------------------------------------
 #include "camera.hpp"
 
-#include <Eigen/LU>
-#include <Eigen/QR>
-#include <Eigen/Array>
-
 #include "util/linalg.hpp"
-
-#include <algorithm>
-#include <cmath>
-#include <QDebug>
-#include <limits>
-#include <vector>
 
 #include <gsl/gsl_poly.h>
 #include <gsl/gsl_errno.h>
-
-#include <opencv/cv.h>
 
 //---------------------------------------------------------------------
 
@@ -192,9 +180,8 @@ Camera::Camera(QString id, QString name)
 	, isRefractive_(false)
 	, isDistorted_(false)
 {
-	lensDistortion_.assign(0.0f);
-	//P_.topLeftCorner<3, 3>() = Matrix3d::Identity();
-	P_.corner<3, 3>(TopLeft) = Matrix3d::Identity();
+    lensDistortion_.fill(0.0f);
+    P_.topLeftCorner<3, 3>() = Matrix3d::Identity();
 }
 
 //---------------------------------------------------------------------
@@ -255,30 +242,26 @@ void Camera::set(const Eigen::Matrix3d &K, const Eigen::Matrix3d &R, const Eigen
 //---------------------------------------------------------------------
 
 void Camera::updateProjection() {
-	//P_.topLeftCorner<3, 3>() = R_;
-	P_.corner<3, 3>(TopLeft) = R_;
+    P_.topLeftCorner<3, 3>() = R_;
 	P_.col(3) = t_;
 	P_ = K_ * P_;
 	updatePrincipleRay();
 }
 
 void Camera::updateOthers() {
-	//P_ /= P_.row(2).head<3>().squaredNorm();
-	P_ /= P_.row(2).start<3>().squaredNorm();
+    P_ /= P_.row(2).head<3>().squaredNorm();
 
 	// RQ Factorization
-	//Matrix3d M = P_.topLeftCorner<3, 3>();
-	Matrix3d M = P_.corner<3, 3>(TopLeft);
+    Matrix3d M = P_.topLeftCorner<3, 3>();
 	Matrix3d reverseRows;
 	reverseRows << 0, 0, 1, 0, 1, 0, 1, 0, 0;
 
-	//
-	auto qrDecomp = (reverseRows * M).transpose().qr();
-	Matrix3d matrixQ = qrDecomp.matrixQ();
-	Matrix3d matrixR = qrDecomp.matrixR();
-	//auto qrDecomp = FullPivHouseholderQR<Matrix3d>((reverseRows * M).transpose());
-	//Matrix3d matrixQ = qrDecomp.matrixQ();
-	//Matrix3d matrixR = matrixQ.inverse() * (reverseRows * M).transpose();
+    auto qrMatrix = (reverseRows * M).transpose();
+    Eigen::ColPivHouseholderQR<Matrix3d> qrDecomp;
+    qrDecomp.compute(qrMatrix);
+
+    const Matrix3d matrixQ = qrDecomp.householderQ();
+    const Matrix3d matrixR = qrDecomp.matrixR();
 
 	R_ = reverseRows * matrixQ.transpose();
 	K_ = reverseRows * matrixR.transpose() * reverseRows;
@@ -370,6 +353,8 @@ Eigen::Vector3d Camera::fromLocalToGlobal(const Eigen::Vector3d &p) const {
 	return Rinv_*(p - t_);
 }
 
+// TODO these two aren't right, since the distance will now be relative to the
+//      origin of the global/local space
 Plane3d Camera::fromGlobalToLocal(const Plane3d &p) const {
 	Plane3d::Vector norm = R_*p.normal();
 	return Plane3d(norm, p.distance());

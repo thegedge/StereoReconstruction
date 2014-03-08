@@ -22,7 +22,6 @@
 #define FINDFEATURESDIALOG_HPP
 
 #include <QDialog>
-#include "util/c++0x.hpp"
 
 //
 // Forward declarations

@@ -29,10 +29,6 @@
 #include <QSet>
 #include <QTime>
 
-#include <cmath>
-#include <Eigen/Dense>
-#include <Eigen/LU>
-
 //---------------------------------------------------------------------
 
 RadiometricCalibrationTask::RadiometricCalibrationTask(
@@ -258,8 +254,7 @@ RadiometricCalibrationTask::responseCurve(QList<int> rows, const Samples &sample
 	Eigen::MatrixXd transA = A.transpose();
 	Eigen::VectorXd x = transA*b;
 	A = transA*A;
-	//x = A.lu().solve(x);
-	A.lu().solve(x, &b);
+    x = A.lu().solve(x);
 
 	//
 	std::vector<double> response(n, 0.0);

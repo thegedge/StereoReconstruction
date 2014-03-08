@@ -20,9 +20,9 @@
 //---------------------------------------------------------------------
 #include "correspondence.hpp"
 #include "feature.hpp"
-#include <limits>
 
 //---------------------------------------------------------------------
+
 namespace {
 	const double INF = std::numeric_limits<double>::infinity();
 }
