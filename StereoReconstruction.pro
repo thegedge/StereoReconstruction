@@ -58,7 +58,7 @@ PRECOMPILED_HEADER = util/precompiled.hpp
 
 FORMS += $$files(gui/forms/*.ui)
 
-OTHER_FILES += shaders/*.* project/project.xsd GPL_HEADER LICENSE README
+OTHER_FILES += shaders/*.* project/project.xsd GPL_HEADER LICENSE README.md
 
 RESOURCES += resources.qrc
 INCLUDEPATH += .
