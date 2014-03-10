@@ -62,7 +62,8 @@ using std::sqrt;
 
 //---------------------------------------------------------------------
 
-const cv::Size board_size(11, 9); // TODO allow customizing this parameter
+// TODO allow customizing this parameter
+const cv::Size board_size(11, 9);  // example data
 //const cv::Size board_size(8, 9); // NEPTUNE data
 //const cv::Size board_size(6, 8); // CalibrationTest data
 
@@ -80,12 +81,14 @@ namespace {
 	const double NaN = std::numeric_limits<double>::quiet_NaN();
 }
 
+#ifdef USE_SBA
 namespace {
 #ifdef INCLUDE_INTRINSIC_IN_BA
 	const int NUM_CAM_PARAMS = 10;
 #else
 	const int NUM_CAM_PARAMS = 6;
 #endif
+
 
 	void projection_error(int j, int /*i*/, double *aj, double *bi, double *xij, void *adata) {
 		//
@@ -125,6 +128,7 @@ namespace {
 
 	}
 } // end of unnamed namespace
+#endif
 
 //---------------------------------------------------------------------
 // XXX how about templating?
@@ -331,7 +335,7 @@ void CameraCalibration::estimateIntrinsics(const std::vector<int> &imageIndices)
 		if(isCancelled()) break;
 
 		CameraPtr cam = cameras[cam_index];
-		int num_points = 0;
+        int total_points = 0;
 
 		// Form vectors of image points and object points for all images
 		// in which the pattern is completely visible
@@ -340,14 +344,14 @@ void CameraCalibration::estimateIntrinsics(const std::vector<int> &imageIndices)
 		foreach(int img_index, imageIndices) {
             int num_points = static_cast<int>(image_points[cam_index][img_index].size());
             if(num_points == board_size.area()) {
-				num_points += board_size.area();
+                total_points += board_size.area();
 				object_points_temp.push_back(object_points);
 				image_points_temp.push_back(image_points[cam_index][img_index]);
 			}
 		}
 
 		//
-		if(num_points > 0) {
+        if(total_points > 0) {
 			cv::Mat camMatrix(3, 3, CV_64FC1), distCoeffs(5, 1, CV_64FC1);
 
 			// Try at most n times to calibrate the system (just in case it
@@ -493,7 +497,7 @@ void CameraCalibration::estimateExtrinsics(const std::vector<int> &imageIndices)
 											   R[cam_index][cam_index2],
 											   t[cam_index][cam_index2],
 											   E,
-			                                  F[cam_index][cam_index2]);
+                                               F[cam_index][cam_index2]);
 
 			R[cam_index2][cam_index] = R[cam_index][cam_index2].t();
 			t[cam_index2][cam_index] = -R[cam_index][cam_index2].t() * t[cam_index][cam_index2];
@@ -543,7 +547,7 @@ void CameraCalibration::estimateExtrinsics(const std::vector<int> &imageIndices)
 	// pairwise calibrations together so that everyone's projection
 	// matrix works in the same basis
 	for(size_t i = 0; i < graph.size(); ++i) if(i != bestFrameOfReference) {
-		std::deque<int> path = fw.path(bestFrameOfReference, i);
+        std::deque<int> path = fw.path(bestFrameOfReference, i);
 
 		cv::Mat	accumR = cv::Mat::eye(3, 3, CV_64FC1);
 		cv::Mat accumT = cv::Mat::zeros(3, 1, CV_64FC1);
@@ -714,12 +718,6 @@ void CameraCalibration::calibrate() {
 	//
 	// Calibrate intrinsic/extrinsic parameters
 	//
-	std::vector<int> indices(imageSets.size());
-	for(size_t index = 0; index < imageSets.size(); ++index)
-		indices[index] = index;
-
-    const int num = std::min(static_cast<int>(indices.size()),
-                             std::max(30, static_cast<int>((4 * indices.size()) / 6)) );
 
 	// Initial lowest error based on calibration that already exists in cams
 	double lowestError = computeError();
@@ -754,7 +752,17 @@ void CameraCalibration::calibrate() {
 	//   obtained calibration is good.
 	//
 	emit stageUpdate(tr("Estimating intrinsic/extrinsic parameters of cameras..."));
-	for(int iteration = 0; iteration < NUM_ITERATIONS; ++iteration) {
+
+    std::vector<int> indices(imageSets.size());
+    for(size_t index = 0; index < imageSets.size(); ++index)
+        indices[index] = index;
+
+    // Randomly select two thirds of the indices
+    const int num = std::min(static_cast<int>(indices.size()),
+                             std::max(30, static_cast<int>((2 * indices.size()) / 3)) );
+
+    int iteration = (num >= static_cast<int>(indices.size()) ? 1 : NUM_ITERATIONS);
+    while(iteration-- > 0) {
 		// Reset to identity for this iteration
 		for(size_t camIndex = 0; camIndex < cameras.size(); ++camIndex) {
 			if(findExtrinsicParameters) {
@@ -787,7 +795,7 @@ void CameraCalibration::calibrate() {
 
 		// Reset if not better
 		double currentError = computeError();
-		qDebug() << currentError;
+        qDebug() << "error: " << currentError;
 		if(currentError > 1e-10 && currentError + 1e-10 < lowestError) {
 			for(size_t camIndex = 0; camIndex < cameras.size(); ++camIndex) {
 				if(findExtrinsicParameters) {

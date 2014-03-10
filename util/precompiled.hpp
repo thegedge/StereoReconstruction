@@ -55,6 +55,7 @@
 #include <opencv/highgui.h>
 #include <opencv2/nonfree/features2d.hpp>
 
+#include <QtCore/QDebug>
 
 #define FORWARD_DECLARE(cls) \
     class cls; \

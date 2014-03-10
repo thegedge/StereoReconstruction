@@ -124,7 +124,7 @@ void RadiometricCalibrationWidget::calibrate() {
 			SIGNAL(finished(const Task *)),
 			SLOT(updateResponseCurve(const Task *)));
 
-	qApp->notify(QApplication::activeWindow(), new NewTaskEvent(calibrationTask));
+    qApp->notify(parent(), new NewTaskEvent(calibrationTask));
 }
 
 //---------------------------------------------------------------------

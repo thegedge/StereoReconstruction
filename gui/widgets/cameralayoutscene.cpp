@@ -86,6 +86,9 @@ void CameraLayoutScene::setSelectedCamera(CameraPtr cam) {
 //---------------------------------------------------------------------
 
 void CameraLayoutScene::setProject(ProjectPtr project) {
+    qRegisterMetaType<Eigen::Matrix3d>("Eigen::Matrix3d");
+    qRegisterMetaType<Eigen::Vector3d>("Eigen::Vector3d");
+
 	if(this->project != project) {
 		foreach(CameraPtr cam, project->cameras()) {
 			connect(cam.get(),

@@ -97,7 +97,7 @@ void FindFeaturesDialog::accept() {
 
 	// Create background task
 	std::shared_ptr<FindFeaturesTask> task(new FindFeaturesTask(project, cameras, imageSets, detector));
-	qApp->notify(QApplication::activeWindow(), new NewTaskEvent(task));
+    qApp->notify(parent(), new NewTaskEvent(task));
 }
 
 //---------------------------------------------------------------------

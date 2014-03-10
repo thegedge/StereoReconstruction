@@ -997,7 +997,7 @@ void StereoWidget::on_computeDepthMapsButton_clicked() {
 				SIGNAL(finished(const Task *)),
 				SLOT(stereoCompleted(const Task *)));
 
-		qApp->notify(QApplication::activeWindow(), new NewTaskEvent(mvs));
+        qApp->notify(QApplication::activeWindow(), new NewTaskEvent(mvs));
 	}
 }
 

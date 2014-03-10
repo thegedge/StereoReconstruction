@@ -77,8 +77,8 @@ Project::Project(QString projectPath)
 	if(projectPath.isNull())
 		return;
 
-    auto & schema = getSchema();
-    auto & validator = getValidator();
+    auto &schema = getSchema();
+    auto &validator = getValidator();
 
     if(!schema.isValid()) {
 		QFile schemaFile(SCHEMA_PATH);
@@ -150,7 +150,7 @@ Project::Project(QString projectPath)
 
 		//
 		QDomNode responseNode = cameraNode.firstChildElement("response");
-		Responses responses(256);
+        Responses responses(256, Response::Zero());
 		while(!responseNode.isNull()) {
 			QString channelName = getAttribute(responseNode, "channel", QString());
 			if(!channelName.isNull()) {

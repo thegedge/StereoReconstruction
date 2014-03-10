@@ -90,7 +90,7 @@ void CalibrationSetupDialog::accept() {
 
 	// Create background task
 	std::shared_ptr<CameraCalibration> task(new CameraCalibration(project, cameras, imageSets));
-	qApp->notify(QApplication::activeWindow(), new NewTaskEvent(task));
+    qApp->notify(parent(), new NewTaskEvent(task));
 }
 
 //---------------------------------------------------------------------

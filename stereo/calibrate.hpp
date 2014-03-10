@@ -44,7 +44,7 @@ public:
 					  const std::vector<ImageSetPtr> &imageSets);
 
 public:
-	void calibrate();
+    void calibrate();
 
 public:
 	QString title() const { return "Camera Calibration"; }

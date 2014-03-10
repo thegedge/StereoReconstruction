@@ -256,12 +256,10 @@ void Camera::updateOthers() {
 	Matrix3d reverseRows;
 	reverseRows << 0, 0, 1, 0, 1, 0, 1, 0, 0;
 
-    auto qrMatrix = (reverseRows * M).transpose();
-    Eigen::ColPivHouseholderQR<Matrix3d> qrDecomp;
-    qrDecomp.compute(qrMatrix);
-
+    const Eigen::Matrix3d qrMatrix = (reverseRows * M).transpose();
+    const Eigen::HouseholderQR<Matrix3d> qrDecomp(qrMatrix);
     const Matrix3d matrixQ = qrDecomp.householderQ();
-    const Matrix3d matrixR = qrDecomp.matrixR();
+    const Matrix3d matrixR = qrDecomp.matrixQR().triangularView<Upper>();
 
 	R_ = reverseRows * matrixQ.transpose();
 	K_ = reverseRows * matrixR.transpose() * reverseRows;

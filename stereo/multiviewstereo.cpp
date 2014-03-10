@@ -553,9 +553,8 @@ void MultiViewStereo::computeInitialEstimate(size_t viewIndex) {
 		WeightFunc weightFunc(WINDOW_RADIUS);
 		for(int y = 0; y < height; ++y) {
 #endif
-			if(this->isCancelled()) continue;
 			for(int x = 0; x < width; ++x) {
-				if(this->isCancelled()) break;
+                if(this->isCancelled()) return;
 
 				computedDepths[viewIndex][ PV(x, y, results[viewIndex]) ] = INF;
 
@@ -654,6 +653,7 @@ void MultiViewStereo::computeInitialEstimate(size_t viewIndex) {
 #else
 	for(int y = 0, p = 0; y < height; ++y) {
 		for(int x = 0; x < width; ++x, ++p) {
+            if(this->isCancelled()) return;
 			if(mask.pixel(x, y) == WHITE)
 				computedDepths[viewIndex][p] = CostFunction::peakPairs[y][x].back().second;
 		}
@@ -678,7 +678,7 @@ void MultiViewStereo::crossCheck(size_t view_index) {
 #else
 	for(int y = 0; y < images[view_index].height(); ++y) {
 #endif
-		if(this->isCancelled()) continue;
+        if(this->isCancelled()) break;
 		for(int x = 0; x < images[view_index].width(); ++x) {
 			//
 			double &depth = computedDepths[view_index][ PV(x, y, results[view_index]) ];
