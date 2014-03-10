@@ -56,7 +56,7 @@ Example workflow
 The following workflow shows how you can find depth maps for the example
 project provided in the `example/` subdirectory.
 
-## Calibrate the cameras
+### Calibrate the cameras
 
   1. After starting the program, open `example/project.xml`.
   2. Find the checkboard features.
@@ -88,7 +88,7 @@ project provided in the `example/` subdirectory.
      the `View -> View Camera Layout` menu item. If the calibration was
      successful, you should see a semi-circle containing the eight cameras.
 
-## Find the depth maps
+### Find the depth maps
 
   1. In the `Refractive Calibration` tab, select the `bunny` image set.
   2. Once successfully calibrated, you should be able to click an image and see
