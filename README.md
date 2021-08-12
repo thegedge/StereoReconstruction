@@ -1,4 +1,11 @@
------------------------------------------------------------------------------
+# StrereoReconstruction
+
+This is software I created during my Master of Science (Computing Science) education at the University of Alberta. It provided the results for my thesis, [Underwater Stereo Matching and its Calibration](https://era.library.ualberta.ca/items/ecc52c46-24d1-48a0-9cb0-91fae234ca8e). Abstract:
+
+>  A fundamental component of stereo vision is that of epipolar geometry. It shows that the corresponding point of a pixel in one image is restricted to a line in another image. When a refractive surface is introduced, such as in underwater imaging, this constraint no longer holds. Instead, the corresponding point of a pixel in one image is now restricted to a curve, not a line, in the other image. In this thesis, we investigate the impact of a planar refractive interface on stereo matching. We address the issue of 3D point projection in a refractive medium, including cases where the refractive interface is not parallel with the camera’s imaging plane. A novel method for calibrating the parameters of a planar refractive interface is proposed. We show how to compute the refractive epipolar curve for a pixel, which allows us to generate a matching cost volume that compensates for the effects of refraction. We implement a multi-view stereo algorithms to test the correctness of our matching cost volume. The experimental results show that our new approach can significantly improve the results of underwater stereo matching over previous approaches using heuristic methods to account for refraction.
+
+I'm not actively working on this, given this was used for research, but hope it can serve as a basis for anyone wanting to learn from or reimplement my work 🙂
+
 StereoReconstruction Project File
 -----------------------------------------------------------------------------
 
@@ -25,7 +32,7 @@ libraries:
 
 The recommended environment for building StereoReconstruction is Qt Creator 2.x.
 
------------------------------------------------------------------------------
+
 Tunable Options
 -----------------------------------------------------------------------------
 
@@ -49,7 +56,7 @@ Also, be sure to specify any non-standard library/include paths in your user
 config file. To see which libraries are included for each of the above options,
 browse down through this file.
 
------------------------------------------------------------------------------
+
 Example workflow
 -----------------------------------------------------------------------------
 
